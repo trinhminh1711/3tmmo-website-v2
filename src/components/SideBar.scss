@@ -1,0 +1,103 @@
+
+.permision {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    p {
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 1rem;
+      color: white;
+      .permission-info {
+        text-transform: uppercase;
+        color: #6de868;
+      }
+    }
+    .time {
+      padding: 0;
+      font: 1rem sans-serif;
+    }
+  }
+  .menu {
+    padding: 0;
+    & > .item {
+      font-size: 1rem;
+      color: rgb(191, 203, 217);
+      padding: 1rem;
+  
+      transition: all 0.3s ease-in-out;
+  
+      &:hover {
+        background-color: #263445 !important;
+        cursor: pointer;
+      }
+      i {
+        margin-right: 1rem;
+      }
+      p {
+        margin: 0;
+      }
+    }
+  }
+  .menu-text {
+    display: flex;
+    align-items: center;
+  
+    i {
+      font-size: 1rem;
+    }
+    .fa-sort-down {
+      margin-top: -1rem;
+    }
+  }
+  .active {
+    background-color: #263445 !important;
+  }
+  .sub-menu {
+    transition: all 0.3s ease-in-out;
+    margin-top: 2rem;
+    padding-left: 1rem;
+    font-size: 1rem;
+    li {
+      transition: all 0.3s ease-in-out;
+      padding-top: 1.5rem;
+      &:hover {
+        color: red;
+        margin-left: 0.3rem;
+      }
+    }
+  }
+  .logo {
+    img {
+      max-width: 50px;
+      margin: 0 auto;
+      display: block;
+      padding-top: 0.5rem;
+    }
+  
+    border-bottom: solid 1px #fff;
+  }
+  .fade-enter,
+  .fade-leave {
+    transition: opacity 0.4s;
+  }
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.4s;
+  }
+  .fade-enter-to, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
+  .contact {
+  
+    padding: 1rem;
+    p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1;
+      color: #fff;
+    }
+    img {
+      max-width: 1.4rem;
+      margin: 0 0.5rem 0 .5rem;
+    }
+  }

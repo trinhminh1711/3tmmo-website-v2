@@ -1,0 +1,39 @@
+
+.user 
+{
+
+    .box__avatar
+    {
+        border-top: solid 1px ;
+        border-bottom: solid 1px ;
+        .user_permission
+        {
+            p 
+            {
+                font-weight: bold;
+                margin: 1rem 0 .5rem 0;
+            }
+        }
+        .v-avatar
+        {
+            width: 100px !important;
+            height: 100px !important;
+            max-width: 100px;
+            margin: 1rem 0;
+        }
+    }
+    .user_contact
+    {
+        margin: 1rem 0;
+        font-size: .8rem;
+        .v-icon
+        {
+            font-size: 1rem;
+        }
+    }
+    .usr_info 
+    {
+        padding: 0 1rem;
+    }
+
+}
