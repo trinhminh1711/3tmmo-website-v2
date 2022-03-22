@@ -1,74 +1,40 @@
 <template>
-  <div class="pa-5">
-    <h1 class="ml-4 mb-10">
-      <v-icon size="40">mdi-certificate</v-icon> Thêm mới thông báo
-    </h1>
-    <v-container>
-      <v-row>
-        <v-col cols="12" sm="12">
-          <v-text-field
-            v-model="title"
-            label="Tiêu đề"
-            outlined
-            shaped
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" sm="12">
-          <v-textarea
-            v-model="content"
-            outlined
-            name="input-7-4"
-            label="Nội dung"
-          ></v-textarea>
-        </v-col>
-        <v-btn
-          class="ma-2"
-          :loading="loading"
-          :disabled="loading"
-          color="secondary"
-          @click="addNotify()"
-        >
-          <v-icon>mdi-bell-plus</v-icon> Thêm thông báo
-        </v-btn>
-      </v-row>
-    </v-container>
+  <div>
+    <vue-editor v-model="content"></vue-editor>
+    <v-btn
+      color="blue-grey"
+      class="ma-2 white--text"
+      @click="addNotify"
+    >
+      Upload
+      <v-icon right dark> mdi-cloud-upload </v-icon>
+    </v-btn>
   </div>
 </template>
 
 <script>
 import * as notification from "../../api/notification/notification";
+import { VueEditor } from "vue2-editor";
 export default {
+  components: {
+    VueEditor,
+  },
   data() {
     return {
       loader: null,
       loading: false,
-      title: "",
-      content: "",
+      content: "<h3>Nhập nội dung</h3>",
     };
   },
   methods: {
     async addNotify() {
       const date = new Date();
       const dateString = date.toLocaleDateString();
-      await notification.addNotification(
-        this.title,
-        this.content,
-        dateString
-      );
+      await notification.addNotification(this.content, dateString);
       this.loader = "loading";
     },
   },
-  watch: {
-    loader() {
-      const l = this.loader;
-      this[l] = !this[l];
-      setTimeout(() => {
-        this[l] = false;
-       // alert("Thêm thành công");
-       // location.reload();
-      }, 1000);
-    },
-  },
+  watch: {},
 };
 </script>
 

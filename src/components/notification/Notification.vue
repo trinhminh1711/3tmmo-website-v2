@@ -33,8 +33,6 @@ export default {
   },
   async mounted() {
     const Notify = await notification.getLastestUpdate();
-    this.title = Notify[0].title;
-    this.content = Notify[0].content;
   },
 };
 </script>

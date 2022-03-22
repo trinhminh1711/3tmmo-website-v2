@@ -15,20 +15,19 @@
         tile
       >
         <v-list-item>
-          <v-list-item-content>
+          <v-list-item-content
+            style="cursor: pointer"
+          >
             <div class="d-flex">
-              <v-list-item-title class="title d-flex align-center">
-                <v-icon class="mr-3">mdi-star</v-icon> {{ item.title }}
+              <v-list-item-title  @click="viewDetailNotify(item.content)" class="title d-flex align-center">
+                <p class="date">
+                  <v-icon class="mr-3">mdi-update</v-icon> Ngày thêm :
+                  {{ item.extra_date }}
+                </p>
               </v-list-item-title>
-              <v-icon @click="deleteNoti(item)">mdi-delete</v-icon>
+              <v-icon class="delete_notify" @click="deleteNoti(item)">mdi-delete</v-icon>
             </div>
-            <p class="content">
-              {{ item.content }}
-            </p>
-            <p class="date">
-              <v-icon class="mr-3">mdi-update</v-icon> Ngày thêm :
-              {{ item.extra_date }}
-            </p>
+            <p @click="viewDetailNotify(item.content)"  v-html="item.content" class="content"></p>
           </v-list-item-content>
         </v-list-item>
       </v-card>
@@ -53,24 +52,39 @@
         <v-divider></v-divider>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="viewDetail" width="1000">
+      <v-card>
+        <DetailNotify :content="contentDetailNotify" />
+        <v-divider></v-divider>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import * as notification from "../../api/notification/notification";
 import AddNotify from "../Notifications/AddNotification";
+import DetailNotify from "../Notifications/DetailNotification.vue";
 export default {
-  components: { AddNotify },
+  components: { AddNotify, DetailNotify },
   data() {
     return {
-      notify: "",
+      notify: [],
       deleteNotify: "",
       popupDelete: false,
       popupAddNotify: false,
+      viewDetail: false,
+      contentDetailNotify: "",
     };
   },
   async mounted() {
-    this.notify = await notification.getNotification();
+    const arrNotify = await notification.getNotification();
+    arrNotify.forEach((element) => {
+      var dataNotify = {};
+      dataNotify.extra_date = element.extra_date.replaceAll("'", "");
+      dataNotify.content = element.content.replaceAll("'", "");
+      this.notify.push(dataNotify);
+    });
   },
   methods: {
     deleteNoti(itemNotify) {
@@ -79,11 +93,12 @@ export default {
     },
     async requestDelete() {
       this.popupDelete = false;
-      await notification.deleteNotification(
-        this.deleteNotify.id
-      );
+      await notification.deleteNotification(this.deleteNotify.id);
       location.reload();
-
+    },
+    viewDetailNotify(value) {
+      this.contentDetailNotify = value;
+      this.viewDetail = true;
     },
     addNotify() {
       this.popupAddNotify = true;

@@ -31,9 +31,6 @@ export async function getOrders(since, until, idUser) {
     }
     return getAll;
 }
-
-
-
 export async function getOrdersOnePage(since, until, idUser, page) {
     var arrayOrder = [
     ]

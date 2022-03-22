@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <Notification v-if="loginTrue" />
     <v-main>
       <v-container fluid class="grey lighten-5 pd-0">
         <v-row no-gutters>
@@ -24,14 +23,12 @@
 </template>
 
 <script>
-import Notification from "../components/notification/Notification.vue";
 import SideBar from "../components/SideBar.vue";
 import Menu from "../components/Menu.vue";
 export default {
   name: "App",
   components: {
     SideBar,
-    Notification,
     Menu,
   },
   data() {
