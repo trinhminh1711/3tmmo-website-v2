@@ -18,14 +18,14 @@
             <th class="text-left">Đường dẫn</th>
             <th class="text-left">Hoa hồng</th>
             <th class="text-left">Kí hiệu</th>
-            <th class="text-left">Chỉnh sửa</th>
+            <th v-if="showAdmin" class="text-left">Chỉnh sửa</th>
           </tr>
         </thead>
         <tbody class="list">
           <tr v-for="(partner, index) in listPartners" :key="index">
             <td>{{ partner.name }}</td>
             <td style="max-width: 700px; padding: 1rem; overflow: hidden">
-              {{ partner.redirect_link  }}
+              {{ partner.redirect_link }}
             </td>
             <td>{{ partner.unit_price }}</td>
             <td>{{ partner.sign }}</td>

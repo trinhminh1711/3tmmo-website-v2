@@ -38,7 +38,6 @@ export default {
   async mounted() {
     this.getPartner();
     const role = await permission.checkPermission();
-    console.log(role);
     if (role == 0) {
       this.funcPartner = true;
     } else {

@@ -89,39 +89,41 @@
                   >
                 </v-list-item-content>
               </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>mdi-cash-multiple</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    Thu nhập ( 30 ngày gần nhất ) :
-                    <strong style="color: red; font-size: 1.4rem"
-                      >{{
-                        new Intl.NumberFormat().format(
-                          infoDetailUser.totalValue
-                        )
-                      }}
-                      VNĐ</strong
-                    >
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <v-btn
+                v-if="!editPass"
+                @click="showEditPassword"
+                class="mt-5 ml-4"
+                depressed
+                color="error"
+              >
+                Đổi mật khẩu
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
       </v-list-item-group>
     </v-list>
+    <EditPassword :userId="infoDetailUser.id" v-if="editPass" />
   </div>
 </template>
 
 <script>
+import EditPassword from "./EditPasswordUser.vue";
 export default {
+  data() {
+    return {
+      editPass: false,
+    };
+  },
+  methods: {
+    showEditPassword() {
+      this.editPass = true;
+    },
+  },
   props: ["infoDetailUser"],
+  components: {
+    EditPassword,
+  },
   mounted() {
     console.log(this.infoDetailUser);
   },

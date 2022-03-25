@@ -11,11 +11,26 @@
       label="Đường dẫn"
       clearable
     ></v-text-field>
+    <p class="font-weight-light ml-2" style="opacity: 0.4">
+      Tỷ lệ hoa hồng tính bằng đơn vị VND
+    </p>
     <v-text-field
       v-model="partnerEdit.unit_price"
       solo
       label="Hoa hồng (đơn vị VNĐ)"
       clearable
+    ></v-text-field>
+    <p class="font-weight-light ml-2" style="opacity: 0.4">
+      Tỷ lệ hoa hồng tính bằng đơn vị %
+    </p>
+    <v-text-field
+      v-model="partnerEdit.percentage"
+      label="Tỷ lệ chia ( đơn vị % )"
+      numbe
+      required
+      solo
+      clearable
+      type="number"
     ></v-text-field>
     <v-text-field
       v-model="partnerEdit.sign"
@@ -75,22 +90,24 @@ export default {
     return {
       confirmDelete: false,
       alertSuccess: false,
-      loading : false,
+      loading: false,
       errorSuccess: false,
     };
   },
-  mounted() {},
+  mounted() {
+    console.log(this.partnerEdit);
+  },
   methods: {
     async updatePartner() {
-      const update = await partner.updatePartner(
+      console.log(this.partnerEdit);
+      await partner.updatePartner(
         this.partnerEdit.name,
         this.partnerEdit.link,
         this.partnerEdit.unit_price,
-        this.partnerEdit.sign
+        this.partnerEdit.sign,
+        parseInt(this.partnerEdit.percentage)
       );
-      console.log(update);
       alert("update thành công");
-      location.reload();
     },
     deletePartner() {
       this.confirmDelete = !this.confirmDelete;
@@ -103,9 +120,11 @@ export default {
       if (deleteRes) {
         this.alertSuccess = true;
         this.errorSuccess = false;
+        location.reload();
       } else {
         this.alertSuccess = false;
         this.errorSuccess = true;
+        location.reload();
       }
     },
   },

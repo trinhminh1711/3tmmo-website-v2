@@ -7,7 +7,7 @@ import excel from "vue-excel-export";
 import { VueEditor } from "vue2-editor";
 import axios from "axios";
 axios.defaults.headers.common["Authorization"] =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0Nzk0MzM2NSwiZXhwIjoxNjQ3OTQ2OTY1fQ.DY24O1ESM1Lveqbax59iXOwpuilCD12F4lj5wKpKSmo";
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0ODIwMTcxMywiZXhwIjoxNjQ4MjA1MzEzfQ.M7jCspd-AY1PEALTloWqGFZ5g265YzdjVR0dqQ-refc";
 Vue.config.productionTip = false;
 Vue.use(excel);
 new Vue({

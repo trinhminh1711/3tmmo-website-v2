@@ -98,7 +98,7 @@ export default {
           value: "id_convert",
         },
         { text: "Username", value: "username" },
-        { text: "Mật khẩu", value: "password" },
+        { text: "Quyền tài khoản", value: "role" },
         { text: "Họ và tên", value: "name" },
         { text: "User quản lý", value: "parent_id" },
         { text: "Actions", value: "actions", sortable: false },
@@ -124,7 +124,6 @@ export default {
     },
 
     async deleteRequest() {
- 
       this.dialogDelete = false;
       const deleteRes = await deleteUser.deleteUser(this.id);
       if (deleteRes.delete) {

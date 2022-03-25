@@ -26,6 +26,14 @@
       type="number"
     ></v-text-field>
     <v-text-field
+      v-model="percentagePartner"
+      label="Tỷ lệ chia ( đơn vị % )"
+      placeholder="10"
+      outlined
+      required
+      dense
+    ></v-text-field>
+    <v-text-field
       v-model="signPartner"
       label="Kí hiệu"
       placeholder="Viết tắt"
@@ -64,6 +72,7 @@ export default {
       errorSuccess: false,
       loading: false,
       namePartner: "",
+      percentagePartner: "",
       linkPartner: "",
       unitPricePartner: "",
       signPartner: "",
@@ -79,8 +88,10 @@ export default {
           this.namePartner,
           this.linkPartner,
           this.unitPricePartner,
-          this.signPartner
+          this.signPartner,
+          this.percentagePartner
         );
+        console.log(createPartner);
         this.loading = false;
         if (createPartner.data.add) {
           this.alertSuccess = true;
@@ -110,7 +121,8 @@ export default {
         this.namePartner == "" ||
         this.linkPartner == "" ||
         this.unitPricePartner == "" ||
-        this.signPartner == ""
+        this.signPartner == "" ||
+        this.percentagePartner == ""
       ) {
         this.showError = true;
         return false;
