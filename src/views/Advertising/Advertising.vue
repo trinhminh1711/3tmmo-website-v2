@@ -94,7 +94,6 @@ export default {
       await this.copyToClipboard(this.link_ads);
       alert("coppy thành công");
     },
-
     async posterity() {
       this.loading = true;
       this.allPosterity = await getPosterity.getPosterity(this.idUser);

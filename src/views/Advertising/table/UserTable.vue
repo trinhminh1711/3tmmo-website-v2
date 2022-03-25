@@ -30,9 +30,9 @@ export default {
           value: "id",
         },
         { text: "Username", value: "username" },
-        { text: "Tổng thu nhập (30 ngày gần nhất )", value: "inCome" },
+        { text: "Họ Tên", value: "name" },
+        { text: "Tổng thu nhập (năm nay )", value: "pub_commission" },
         { text: "Hoa hồng chia", value: "sharing" },
-        { text: "Tỷ lệ chia", value: "rate" },
       ],
     };
   },

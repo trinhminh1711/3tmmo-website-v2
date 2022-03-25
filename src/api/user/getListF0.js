@@ -1,36 +1,30 @@
-const axios = require('axios').default;
-import * as convertId from "../../function/converIdUser";
-import urls from '../../urls';
-import * as orderUtmSource from "../statistic/orderUtmSource";
+const axios = require("axios").default;
+import * as func from "../../function/converIdUser";
+import urls from "../../urls";
 export async function getPosterity(idUser) {
+  const res = await axios.get(urls.User.posterity, { params: { id: idUser } });
+  const promises = [];
+  res.data.map(async (user) => {
+    const value = getIncomeYear(user);
+    promises.push(value);
+  });
+  return Promise.all(promises);
+}
 
-    const res = axios.get(
-        urls.User.posterity + idUser,
-    );
-    const sinceDate = new Date();
-    const untilDate = new Date();
-    sinceDate.setHours(7, 0, 0, 0);
-    untilDate.setHours(30, 59, 59, 0);
-    sinceDate.setDate(sinceDate.getDate() - 30);
-    untilDate.setDate(untilDate.getDate() - 0);
-    const since = sinceDate.toISOString();
-    const until = untilDate.toISOString();
-    const dataRes = await (res);
-    for (let i = 0; i < dataRes.data.length; i++) {
-        dataRes.data[i].user_id = convertId.convertId(dataRes.data[i].user_id);
-    }
-    var newData = [];
-    newData = dataRes.data;
-    var dataUtmSource = [];
-    for (let j = 0; j < newData.length; j++) {
-        var objUtmSource = {};
-        objUtmSource["id"] = newData[j].user_id;
-        objUtmSource["username"] = newData[j].username;
-        var income_usr = await orderUtmSource.getOrders(since, until, newData[j].user_id);
-        objUtmSource["inCome"] = income_usr.toLocaleString('de-DE', { style: 'currency', currency: 'VND' });
-        objUtmSource["sharing"] = (income_usr * 10 / 100).toLocaleString('de-DE', { style: 'currency', currency: 'VND' });
-        objUtmSource["rate"] = "10%";
-        dataUtmSource.push(objUtmSource);
-    }
-    return dataUtmSource;
+async function getIncomeYear(user) {
+  const year = new Date().getFullYear();
+  var currentYear = new Date(year, 0, 1);
+  currentYear.setHours(7, 0, 0, 0);
+  const incomeYear = await axios.get(urls.Order.getIncomeYear, {
+    params: {
+      idUser: func.convertId(user.user_id),
+      since: currentYear.toISOString(),
+    },
+  });
+  var userFull = {};
+  userFull.name = user.name;
+  userFull.username = user.username;
+  userFull.id = func.convertId(user.user_id);
+  userFull.pub_commission = incomeYear.data[0]["SUM(reality_commission)"];
+  return userFull;
 }
