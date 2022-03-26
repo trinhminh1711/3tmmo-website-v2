@@ -35,7 +35,10 @@ const urls =
     },
     Order: {
         getAllOrder: 'https://api.accesstrade.vn/v1/orders',
-        getIncomeYear : 'http://localhost:3000/income/user'
+        getIncome: 'http://localhost:3000/income/user',
+        getIncomeTime: 'http://localhost:3000/income/time/user',
+        getRankIncome: 'http://localhost:3000/rank/user',
+        getRankIncomeTime: 'http://localhost:3000/rank/time/user',
     },
     Campaign: {
         getAllCampaign: 'https://api.accesstrade.vn/v1/campaigns',

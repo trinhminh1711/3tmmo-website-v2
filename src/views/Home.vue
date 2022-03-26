@@ -76,5 +76,6 @@ export default {
 }
 .page-wrapper {
   background-color: #e7e7e7;
+  height: 100%;
 }
 </style>

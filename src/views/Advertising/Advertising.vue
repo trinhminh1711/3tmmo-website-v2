@@ -1,9 +1,9 @@
 <template>
   <div style="height: 90vh">
     <h2>Hệ thống giới thiệu</h2>
-    <v-container class="mt-5">
+    <v-container class="mt-5" fluid>
       <v-row>
-        <v-col cols="3" class="pa-0">
+        <v-col cols="2" class="pa-0 mr-5">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -23,17 +23,33 @@
             >
           </v-tooltip>
         </v-col>
-        <v-col cols="6" class="pa-0">
+        <v-col cols="6" class="pa-0 d-flex align-center">
           <a target="_blank" :href="link_ads" id="link-Ads" class="mx-5">{{
             link_ads
           }}</a>
         </v-col>
       </v-row>
     </v-container>
-    <v-container>
-      <h2 class="mt-5">Danh sách các user bạn đã giới thiệu</h2>
+    <v-container class="mt-5" fluid>
+      <v-row class="d-flex justify-space-between pl-5 pr-5">
+        <h2>Danh sách các user bạn đã giới thiệu</h2>
+        <div class="d-flex">
+          <div class="mr-6 d-flex align-center">
+             <v-btn class="d-flex align-center" @click="posterity()">
+            Xem thu nhập năm
+            <v-icon class="sizes-small ml-3">mdi-cash-multiple</v-icon>
+          </v-btn>
+          </div>
+           <div>
+            <v-btn class="d-flex align-center" @click="getRankUser()">
+              Xem xếp hạng
+              <v-icon class="ml-3 sizes-small">mdi-chevron-triple-up</v-icon>
+            </v-btn>
+          </div>
+        </div>
+      </v-row>
       <v-row>
-        <v-row class="mt-5 pa-5 table_ads">
+        <v-row class="pa-5 table_ads">
           <UserTable :posterity="allPosterity" />
         </v-row>
       </v-row>
@@ -47,6 +63,7 @@
 import UserTable from "./table/UserTable.vue";
 import * as convertId from "../../function/converIdUser";
 import * as getPosterity from "../../api/user/getListF0";
+import * as rank from "../../api/statistic/rankUser";
 
 export default {
   data() {
@@ -89,14 +106,45 @@ export default {
         });
       }
     },
-    async CoppyText()
-    {
+    async CoppyText() {
       await this.copyToClipboard(this.link_ads);
       alert("coppy thành công");
     },
     async posterity() {
       this.loading = true;
-      this.allPosterity = await getPosterity.getPosterity(this.idUser);
+      const year = new Date().getFullYear();
+      var currentYear = new Date(year, 0, 1);
+      currentYear.setHours(7, 0, 0, 0);
+      const saleTime = currentYear.toISOString();
+      (this.allPosterity = await getPosterity.getPosterity(
+        this.idUser,
+        saleTime
+      )),
+        (this.loading = false);
+    },
+    async getRankUser() {
+      this.loading = true;
+      const year = new Date().getFullYear();
+      var currentYear = new Date(year, 0, 1);
+      currentYear.setHours(7, 0, 0, 0);
+      const saleTime = currentYear.toISOString();
+      var emptyArr = [];
+      const dataUser = this.allPosterity;
+      const datatest = await rank.getRank(saleTime);
+      for (let i = 0; i < dataUser.length; i++) {
+        for (let j = 0; j < datatest.length; j++) {
+          if (dataUser[i].id == datatest[j].utm_source) {
+            const objEmty = {};
+            objEmty.id = dataUser[i].id;
+            objEmty.username = dataUser[i].username;
+            objEmty.name = dataUser[i].name;
+            objEmty.rank = j;
+            emptyArr.push(objEmty);
+          }
+        }
+      }
+      this.allPosterity = emptyArr;
+
       this.loading = false;
     },
   },

@@ -38,7 +38,7 @@
         </li>
         <li class="item">
           <router-link to="/advertising">
-          <i class="fas fa-share-alt-square"></i>
+            <i class="fas fa-share-alt-square"></i>
             Hệ thống giới thiệu
           </router-link>
         </li>
@@ -57,7 +57,7 @@
         <li @click="logout" class="item">
           <i class="fas fa-sign-out-alt"></i> Đăng xuất
         </li>
-        <div class="contact d-flex align-center">
+        <div class="contact d-flex align-center fixed b-0">
           <div>
             <p>Liên hệ:</p>
           </div>
@@ -122,6 +122,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.fixed {
+  position: fixed;
+}
+.b-0 {
+  bottom: 30px;
+}
 .sub-menu {
   margin-top: 0 !important;
 }

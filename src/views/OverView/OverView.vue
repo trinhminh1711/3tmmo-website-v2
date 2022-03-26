@@ -9,7 +9,7 @@
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
               <p>Tổng doanh thu ngày</p>
-              <p>{{ $store.state.salesDay.toLocaleString() }}</p>
+              <p>{{ converMoney(dayIncome) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/coins.png" alt="" />
@@ -20,7 +20,7 @@
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
               <p>Tổng doanh thu tháng này</p>
-              <p>{{ $store.state.salesMonth.toLocaleString() }}</p>
+              <p>{{ converMoney(monthIncome) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/coins (1).png" alt="" />
@@ -30,8 +30,8 @@
         <v-col class="pd-0 revenue-col revenue-total" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>Tổng doanh thu tháng trước</p>
-              <p>{{ $store.state.saleLastestMonth.toLocaleString() }}</p>
+              <p>Tổng doanh thu hôm qua</p>
+              <p>{{ converMoney(lastDayIncome) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/salary.png" alt="" />
@@ -42,7 +42,7 @@
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
               <p>Tổng doanh thu năm</p>
-              <p>{{ $store.state.salesYear.toLocaleString() }}</p>
+              <p>{{ converMoney(yearIncome) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/dollar.png" alt="" />
@@ -57,8 +57,11 @@
         <v-col class="pd-0 revenue-col revenue-year" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>Thứ hạng của bạn hôm qua</p>
-              <p>{{ yourRankDay }}</p>
+              <p style="white-space: nowrap">Xếp hạng của bạn hôm nay</p>
+              <p class="text-xl">{{ dayRank }}</p>
+              <p class="text-xl">
+                Bạn cần thêm {{ converMoney(commitRankDay) }} để thăng hạng
+              </p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/military-rank.png" alt="" />
@@ -68,9 +71,13 @@
         <v-col class="pd-0 revenue-col revenue-month" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>Xếp hạng của bạn hôm nay</p>
-              <p>{{ yourRankMonth }}</p>
+              <p style="white-space: nowrap">Thứ hạng của bạn trong tháng</p>
+              <p class="text-xl">{{ monthRank }}</p>
+              <p class="text-xl">
+                Bạn cần thêm {{ converMoney(commitRankMonth) }} để thăng hạng
+              </p>
             </div>
+
             <div class="revenue-icon">
               <img src="../../assets/icon/ranking.png" alt="" />
             </div>
@@ -79,8 +86,13 @@
         <v-col class="pd-0 revenue-col revenue-day" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>User hạng cao nhất ngày hôm qua</p>
-              <div style="white-space: nowrap;">{{ bestRankDay }} : {{ bestUserRankDay }} VNĐ</div>
+              <p style="white-space: nowrap">Thứ hạng của bạn hôm qua</p>
+              <p class="text-xl" :class="{ top1: topmonth }">
+                {{ lastDayRank }}
+              </p>
+              <p class="text-xl">
+                Bạn cần thêm {{ converMoney(commitRankLastDay) }} để thăng hạng
+              </p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/podium.png" alt="" />
@@ -90,8 +102,11 @@
         <v-col class="pd-0 revenue-col revenue-total" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>User hạng cao nhất hôm nay ( tính đến hiện tại )</p>
-              <div style=" white-space: nowrap;">{{ bestRankMonth }} : {{ bestUserRankMonth }} VNĐ</div>
+              <p style="white-space: nowrap">Thứ hạng trong năm</p>
+              <p class="text-xl" :class="{ top1: topyear }">{{ yearRank }}</p>
+              <p class="text-xl">
+                Bạn cần thêm {{ converMoney(commitRankYear) }} để thăng hạng
+              </p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/ranking-top-month.png" alt="" />
@@ -104,237 +119,226 @@
       <div id="loader"></div>
     </div>
   </div>
-</template>
-
+</template> 
 <script>
-import * as order from "../../api/statistic/order";
 import * as convertId from "../../function/converIdUser";
-import * as user from "../../api/user/getUserId";
+import * as getOrder from "../../api/statistic/orderByTime";
+import * as sumYearIncome from "../../api/statistic/getSumYear";
+import * as rank from "../../api/statistic/rankUser";
 export default {
   data() {
     return {
-      salesDay: 0,
-      yourRankDay: "Đang cập nhật ...",
-      yourRankMonth: "Đang cập nhật ...",
-      salesMonth: 0,
-      salesYear: 0,
-      saleLastestMonth: 0,
+      commitRankMonth: 0,
+      commitRankDay: 0,
+      commitRankYear: 0,
+      commitRankLastDay: 0,
+      topmonth: false,
+      topyear: false,
+      dayIncome: 0,
+      dayRank: 0,
+      monthIncome: 0,
+      monthRank: 0,
+      lastDayIncome: 0,
+      lastDayRank: 0,
+      yearIncome: 0,
+      yearRank: 0,
       loading: false,
-      bestRankDay: "",
-      bestUserRankDay: "Đang cập nhật ...",
-      bestRankMonth: "",
-      bestUserRankMonth: "Đang cập nhật ...",
     };
   },
-  created: async function () {
-    await this.getSalesMonthLast();
-    console.log("minhtq");
-  },
-  async mounted() {
-    this.loading = true;
-    await this.getSalesDay();
-    await this.getSalesMonth();
-    this.loading = false;
-    await this.getSalesYear();
-    await this.getYesterdayUser();
-    await this.getLastMonthUser();
+  mounted() {
+    this.getInComeDay();
+    this.getInComeMonth();
+    this.getInComeLastDay();
+    this.getInComeYear();
+    this.getRankDay();
+    this.getRankMonth();
+    this.getRankLastDay();
+    this.getRankYear();
   },
   methods: {
-    async getSalesDay() {
-      const sinceDate = new Date();
-      const untilDate = new Date();
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate.setHours(30, 59, 59, 0);
-      sinceDate.setDate(sinceDate.getDate() - 0);
-      untilDate.setDate(untilDate.getDate() - 0);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      const arrayRes = await order.getOrders(
-        since,
-        until,
-        convertId.convertId(sessionStorage.getItem("IdUser"))
-      );
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          this.salesDay = this.salesDay + arrayRes[i].commission;
-        }
-      }
-      this.$store.state.salesDay = this.salesDay;
+    converMoney(income) {
+      return income.toLocaleString("it-IT", {
+        style: "currency",
+        currency: "VND",
+      });
     },
-    async getSalesMonth() {
-      const sinceDate = new Date();
-      const untilDate = new Date();
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate.setHours(30, 59, 59, 0);
-      sinceDate.setDate(sinceDate.getDate() - sinceDate.getDate() + 1);
-      untilDate.setDate(untilDate.getDate() - 0);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      const arrayRes = await order.getOrders(
-        since,
-        until,
-        convertId.convertId(sessionStorage.getItem("IdUser"))
-      );
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          this.salesMonth = this.salesMonth + arrayRes[i].commission;
-        }
-      }
-      this.$store.state.salesMonth = this.salesMonth;
-    },
-
-    async getSalesMonthLast() {
-      var currentDate = new Date();
+    async getInComeDay() {
       var sinceDate = new Date();
+      sinceDate.setUTCHours(0, 0, 0, 0);
       var untilDate = new Date();
-      sinceDate.setDate(1);
-      sinceDate.setMonth(sinceDate.getMonth() - 1);
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        0
-      );
-      untilDate.setHours(30, 59, 59, 0);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      const arrayRes = await order.getOrders(
+      untilDate.setUTCHours(23, 59, 59, 999);
+      var since = sinceDate.toISOString().split(".")[0];
+      var until = untilDate.toISOString().split(".")[0];
+      const data = await getOrder.getIncomeTime(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
         since,
-        until,
-        convertId.convertId(sessionStorage.getItem("IdUser"))
+        until
       );
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          this.saleLastestMonth =
-            this.saleLastestMonth + arrayRes[i].commission;
-        }
+      if (data != null) {
+        this.dayIncome = data;
+      } else {
+        this.dayIncome = 0;
       }
-      this.$store.state.saleLastestMonth = this.saleLastestMonth;
+    },
+    async getInComeYear() {
+      const data = await sumYearIncome.getSumYear(2022);
+      if (data != null) {
+        this.yearIncome = data;
+      } else {
+        this.yearIncome = 0;
+      }
+    },
+    async getInComeMonth() {
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 7, 0, 1);
+      const endDay = new Date(now.getFullYear(), now.getMonth() + 1, 1, 7);
+      var since = firstDay.toISOString().split(".")[0];
+      var until = endDay.toISOString().split(".")[0];
+      const data = await getOrder.getIncomeTime(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        since,
+        until
+      );
+      if (data != null) {
+        this.monthIncome = data;
+      } else {
+        this.monthIncome = 0;
+      }
+    },
+    async getInComeLastDay() {
+      var sinceDate = new Date();
+      sinceDate.setDate(sinceDate.getDate() - 1);
+      sinceDate.setUTCHours(0, 0, 0, 0);
+      var untilDate = new Date();
+      untilDate.setDate(sinceDate.getDate());
+      untilDate.setUTCHours(23, 59, 59, 99);
+      var since = sinceDate.toISOString().split(".")[0];
+      var until = untilDate.toISOString().split(".")[0];
+      const data = await getOrder.getIncomeTime(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        since,
+        until
+      );
+      if (data != null) {
+        this.lastDayIncome = data;
+      } else {
+        this.lastDayIncome = 0;
+      }
+    },
+    async getRankLastDay() {
+      var sinceDate = new Date();
+      sinceDate.setDate(sinceDate.getDate() - 1);
+      sinceDate.setUTCHours(0, 0, 0, 0);
+      var untilDate = new Date();
+      untilDate.setDate(sinceDate.getDate());
+      untilDate.setUTCHours(23, 59, 59, 99);
+      const data = await rank.getRankTime(
+        sinceDate.toISOString(),
+        untilDate.toISOString()
+      );
+      const rankNumber = await this.filterRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+      if (rankNumber == 1) {
+        this.lastDayRank = "Top 1";
+        this.topmonth = true;
+      } else {
+        this.lastDayRank = rankNumber;
+      }
+      this.commitRankLastDay = await this.commitRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
     },
 
-    async getSalesYear() {
-      const present = new Date();
-      const presentMonth = present.getMonth();
-      var sum = 0;
-      for (let i = 0; i < presentMonth + 1; i++) {
-        const sumMonth = await this.getSalesOnMonth(i);
-        sum = sum + sumMonth;
-      }
-      this.salesYear = sum;
-      this.$store.state.salesYear = this.salesYear;
-    },
-    async getSalesOnMonth(month) {
-      const sinceDate = new Date();
-      const untilDate = new Date();
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate.setHours(30, 59, 59, 0);
-      sinceDate.setDate(1);
-      untilDate.setDate(1);
-      sinceDate.setMonth(month);
-      untilDate.setMonth(month + 1);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      const arrayRes = await order.getOrders(
-        since,
-        until,
-        convertId.convertId(sessionStorage.getItem("IdUser"))
+    async getRankYear() {
+      var firstDay = new Date(new Date().getFullYear(), 0, 1, 7);
+      var date = new Date();
+      date.setHours(7, 0, 0, 0);
+      const data = await rank.getRankTime(
+        firstDay.toISOString(),
+        date.toISOString()
       );
-      var total = 0;
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          total = total + arrayRes[i].commission;
-        }
+      const rankNumber = await this.filterRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+      if (rankNumber == 1) {
+        this.yearRank = "Top 1";
+      } else {
+        this.yearRank = rankNumber;
       }
-      return total;
+      this.commitRankYear = await this.commitRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
     },
-    async getYesterdayUser() {
-      const users = await user.getUserId();
-      const arrIncomUser = [];
-      for (let i = 0; i < users.length; i++) {
-        const incomUser = {};
-        incomUser.id = users[i];
-        incomUser.total = await this.getIncomUserLastDay(users[i]);
-        arrIncomUser.push(incomUser);
+    async getRankMonth() {
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 7, 0, 1);
+      const endDay = new Date(now.getFullYear(), now.getMonth() + 1, 1, 7);
+      const data = await rank.getRankTime(
+        firstDay.toISOString(),
+        endDay.toISOString()
+      );
+      const rankNumber = await this.filterRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+      this.commitRankMonth = await this.commitRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+
+      if (rankNumber == 1) {
+        this.monthRank = "Top 1";
+      } else {
+        this.monthRank = rankNumber;
       }
-      arrIncomUser.sort((a, b) => {
-        return a.total - b.total;
-      });
-      arrIncomUser.reverse();
-      this.getRankDay(arrIncomUser);
-      this.bestRankDay = arrIncomUser[0].id;
-      this.bestUserRankDay = arrIncomUser[0].total.toLocaleString();
     },
-    async getLastMonthUser() {
-      const users = await user.getUserId();
-      const arrIncomUser = [];
-      for (let i = 0; i < users.length; i++) {
-        const incomUser = {};
-        incomUser.id = users[i];
-        incomUser.total = await this.getIncomUserLastMonth(users[i]);
-        arrIncomUser.push(incomUser);
+    async getRankDay() {
+      var sinceDate = new Date();
+      sinceDate.setUTCHours(0, 0, 0, 0);
+      var untilDate = new Date();
+      untilDate.setUTCHours(23, 59, 59, 999);
+      const data = await rank.getRankTime(
+        sinceDate.toISOString(),
+        untilDate.toISOString()
+      );
+      this.commitRankDay = await this.commitRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+      const rankNumber = await this.filterRankUser(
+        convertId.convertId(sessionStorage.getItem("IdUser")),
+        data
+      );
+      if (rankNumber == 1) {
+        this.dayRank = "Top 1";
+      } else {
+        this.dayRank = rankNumber;
       }
-      arrIncomUser.sort((a, b) => {
-        return a.total - b.total;
-      });
-      arrIncomUser.reverse();
-      this.getRankMonth(arrIncomUser);
-      this.bestRankMonth = arrIncomUser[0].id;
-      this.bestUserRankMonth = arrIncomUser[0].total.toLocaleString();
     },
-    async getIncomUserLastDay(idUser) {
-      const sinceDate = new Date();
-      const untilDate = new Date();
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate.setHours(30, 59, 59, 0);
-      sinceDate.setDate(sinceDate.getDate() - 1);
-      untilDate.setDate(untilDate.getDate() - 1);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      var salesLastMonth = 0;
-      const arrayRes = await order.getOrders(since, until, idUser);
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          salesLastMonth = salesLastMonth + arrayRes[i].commission;
-        }
-      }
-      return salesLastMonth;
-    },
-    async getIncomUserLastMonth(idUser) {
-      const sinceDate = new Date();
-      const untilDate = new Date();
-      sinceDate.setHours(7, 0, 0, 0);
-      untilDate.setHours(30, 59, 59, 0);
-      const since = sinceDate.toISOString();
-      const until = untilDate.toISOString();
-      var salesLastMonth = 0;
-      const arrayRes = await order.getOrders(since, until, idUser);
-      for (let i = 0; i < arrayRes.length; i++) {
-        if (arrayRes[i].status == "Tạm duyệt") {
-          salesLastMonth = salesLastMonth + arrayRes[i].commission;
-        }
-      }
-      return salesLastMonth;
-    },
-    getRankDay(arr) {
-      for (let i = 0; i < arr.length; i++) {
-        if (
-          arr[i].id == convertId.convertId(sessionStorage.getItem("IdUser"))
-        ) {
-          console.log(i);
-          this.yourRankDay = i + 1;
+    async filterRankUser(id, rankData) {
+      for (let i = 0; i < rankData.length; i++) {
+        if (rankData[i].utm_source == id) {
+          return i + 1;
+        } else {
+          return "Chưa có thông tin";
         }
       }
     },
-    getRankMonth(arr) {
-      console.log(arr);
-      for (let i = 0; i < arr.length; i++) {
-        if (
-          arr[i].id == convertId.convertId(sessionStorage.getItem("IdUser"))
-        ) {
-          console.log(i);
-          this.yourRankMonth = i + 1;
+    async commitRankUser(id, rankData) {
+      for (let i = 0; i < rankData.length; i++) {
+        if (rankData[i].utm_source == id) {
+          return (
+            rankData[i - 1]["SUM(reality_commission)"] -
+            rankData[i]["SUM(reality_commission)"]
+          );
         }
       }
+      return 0;
     },
   },
 };
@@ -342,6 +346,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "./OverView";
+.container {
+  max-width: 1300px;
+}
 .bg-white {
   background: #fff;
   border-radius: 10px;
@@ -349,6 +356,30 @@ export default {
 
 .revenue .revenue-col > div {
   height: 100%;
+}
+.text-xl {
+  font-size: 1rem;
+  font-weight: bold;
+}
+.top1 {
+  font-size: 1.5em;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  animation: blur 0.75s ease-out infinite;
+  text-shadow: 0px 0px 5px #fff, 0px 0px 7px #fff;
+}
+@keyframes blur {
+  from {
+    text-shadow: 0px 0px 10px rgb(238, 255, 4), 0px 0px 10px rgb(238, 255, 4),
+      0px 0px 25px rgb(238, 255, 4), 0px 0px 25px rgb(238, 255, 4),
+      0px 0px 25px rgb(238, 255, 4), 0px 0px 25px rgb(238, 255, 4),
+      0px 0px 25px rgb(238, 255, 4), 0px 0px 25px rgb(238, 255, 4),
+      0px 0px 50px rgb(238, 255, 4), 0px 0px 50px rgb(238, 255, 4),
+      0px 0px 50px #7b96b8, 0px 0px 150px #7b96b8, 0px 10px 100px #7b96b8,
+      0px 10px 100px #7b96b8, 0px 10px 100px #7b96b8, 0px 10px 100px #7b96b8,
+      0px -10px 100px #7b96b8, 0px -10px 100px #7b96b8;
+  }
 }
 </style>
 

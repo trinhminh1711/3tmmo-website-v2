@@ -11,8 +11,6 @@ import Partner from '../views/Partner/Partner'
 import EditTablePartner from '../views/Partner/table/EditTable'
 import Statistic from '../views/Statistic/Statistic'
 import StatisticOrder from '../views/Statistic/order/order'
-//import StatisticCampaign from '../views/Statistic/campaign/campaigns'
-//import Transaction from '../views/Statistic/Transaction/Transaction'
 import Notification from '../views/Notifications/Notification'
 import ErrorPage from '../components/404'
 Vue.use(VueRouter)

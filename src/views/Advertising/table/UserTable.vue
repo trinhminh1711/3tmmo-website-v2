@@ -32,7 +32,12 @@ export default {
         { text: "Username", value: "username" },
         { text: "Họ Tên", value: "name" },
         { text: "Tổng thu nhập (năm nay )", value: "pub_commission" },
-        { text: "Hoa hồng chia", value: "sharing" },
+        {
+          text: "Tổng thu nhập thực tế (năm nay)",
+          value: "reality_commission",
+        },
+        { text: "Tỷ lệ thực nhận", value: "sharing" },
+        { text: "Thứ hạng", value: "rank" },
       ],
     };
   },
