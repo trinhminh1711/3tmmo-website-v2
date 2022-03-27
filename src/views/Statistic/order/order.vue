@@ -2,393 +2,284 @@
   <div class="height-full">
     <div class="d-flex align-center">
       <h2 class="ml-3">Thống kê đơn hàng</h2>
-      <v-col class="pd-5" cols="12" sm="6" md="4">
-        <v-alert class="mr-0" dense type="info">
-          Từ <strong>{{ converDate(this.sinceDate.toISOString()) }}</strong>
-          đến
-          <strong> {{ converDate(this.untilDate.toISOString()) }}</strong>
-        </v-alert>
-      </v-col>
+      <v-alert class="ml-5 mr-0" dense type="info">
+        Từ <strong class="mx-2">{{ sinceDate.toISOString() }}</strong
+        >đến<strong class="mx-2">{{ untilDate.toISOString() }}</strong>
+      </v-alert>
     </div>
-    <v-container>
-      <v-row class="d-flex">
-        <v-col class="pd-5" cols="12" sm="6" md="3">
-          <v-select
-            class="pa-0"
-            label="Thời gian"
-            v-model="timeline"
-            :items="times"
-            dense
-            @change="showSelectDate"
-            outlined
-          ></v-select>
-        </v-col>
-        <v-col class="pd-5" cols="12" sm="6" md="2">
-          <v-select
-            label="User"
-            v-model="selectUser"
-            :items="user"
-            dense
-            outlined
-          ></v-select>
-        </v-col>
-        <v-col cols="12" class="" sm="6" md="2">
-          <transition name="fade">
-            <input
-              v-if="selectToDate"
-              v-model="startDate"
-              class="date__input"
-              type="date"
-              @change="getOrderToDate"
-            />
-          </transition>
-        </v-col>
-        <v-col cols="12" class="ml-5" sm="6" md="2">
-          <transition name="fade">
-            <input
-              v-if="selectToDate"
-              v-model="endDate"
-              class="date__input"
-              type="date"
-              @change="getOrderToDate"
-            />
-          </transition>
-        </v-col>
-
-        <v-col class="flex-column" cols="12" sm="6" md="2">
-          <v-btn
-            v-if="btnSelectToDate"
-            @click="newOrders()"
-            class="ml-10"
-            color="primary"
+    <div class="d-flex align-center mt-5">
+      <div>
+        <v-select
+          v-model="selectOption"
+          hide-details
+          class="pa-0 ml-5"
+          :items="itemsTime"
+          dense
+          label="Thời gian"
+          outlined
+        ></v-select>
+      </div>
+      <div>
+        <v-select
+          v-model="selectUser"
+          hide-details
+          class="pa-0 ml-5"
+          :items="itemsUser"
+          dense
+          label="User"
+          outlined
+        ></v-select>
+      </div>
+      <div v-if="showSelectDate" class="d-flex align-center">
+        <div>
+          <div
+            @mouseover="selectSince = true"
+            @mouseleave="selectSince = false"
+            class="relative pl-4"
           >
-            <v-icon class="mr-1"> mdi-magnify </v-icon>
-            Tìm kiếm
-          </v-btn>
-        </v-col>
-      </v-row>
-      <h2>
-        Tổng thu nhập tạm duyệt : {{ totalOrderCommission.toLocaleString() }}
-      </h2>
-    </v-container>
+            <input
+              disabled
+              v-model="sinceDateShow"
+              class="input-type"
+              type="text"
+            />
+            <svg
+              class="icon-date"
+              width="21"
+              height="21"
+              viewBox="0 0 21 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.1867 12.4399C10.3845 12.4399 10.5778 12.3813 10.7423 12.2714C10.9067 12.1615 11.0349 12.0054 11.1106 11.8226C11.1863 11.6399 11.2061 11.4388 11.1675 11.2449C11.1289 11.0509 11.0337 10.8727 10.8938 10.7328C10.754 10.593 10.5758 10.4977 10.3818 10.4592C10.1878 10.4206 9.98675 10.4404 9.80402 10.5161C9.6213 10.5917 9.46512 10.7199 9.35524 10.8844C9.24536 11.0488 9.18671 11.2422 9.18671 11.4399C9.18671 11.7052 9.29206 11.9595 9.4796 12.147C9.66714 12.3346 9.92149 12.4399 10.1867 12.4399ZM15.1867 12.4399C15.3845 12.4399 15.5778 12.3813 15.7423 12.2714C15.9067 12.1615 16.0349 12.0054 16.1106 11.8226C16.1863 11.6399 16.2061 11.4388 16.1675 11.2449C16.1289 11.0509 16.0337 10.8727 15.8938 10.7328C15.754 10.593 15.5758 10.4977 15.3818 10.4592C15.1878 10.4206 14.9867 10.4404 14.804 10.5161C14.6213 10.5917 14.4651 10.7199 14.3552 10.8844C14.2454 11.0488 14.1867 11.2422 14.1867 11.4399C14.1867 11.7052 14.2921 11.9595 14.4796 12.147C14.6671 12.3346 14.9215 12.4399 15.1867 12.4399ZM10.1867 16.4399C10.3845 16.4399 10.5778 16.3813 10.7423 16.2714C10.9067 16.1615 11.0349 16.0054 11.1106 15.8226C11.1863 15.6399 11.2061 15.4388 11.1675 15.2449C11.1289 15.0509 11.0337 14.8727 10.8938 14.7328C10.754 14.593 10.5758 14.4977 10.3818 14.4592C10.1878 14.4206 9.98675 14.4404 9.80402 14.5161C9.6213 14.5917 9.46512 14.7199 9.35524 14.8844C9.24536 15.0488 9.18671 15.2422 9.18671 15.4399C9.18671 15.7052 9.29206 15.9595 9.4796 16.147C9.66714 16.3346 9.92149 16.4399 10.1867 16.4399ZM15.1867 16.4399C15.3845 16.4399 15.5778 16.3813 15.7423 16.2714C15.9067 16.1615 16.0349 16.0054 16.1106 15.8226C16.1863 15.6399 16.2061 15.4388 16.1675 15.2449C16.1289 15.0509 16.0337 14.8727 15.8938 14.7328C15.754 14.593 15.5758 14.4977 15.3818 14.4592C15.1878 14.4206 14.9867 14.4404 14.804 14.5161C14.6213 14.5917 14.4651 14.7199 14.3552 14.8844C14.2454 15.0488 14.1867 15.2422 14.1867 15.4399C14.1867 15.7052 14.2921 15.9595 14.4796 16.147C14.6671 16.3346 14.9215 16.4399 15.1867 16.4399ZM5.18671 12.4399C5.38449 12.4399 5.57783 12.3813 5.74228 12.2714C5.90673 12.1615 6.0349 12.0054 6.11059 11.8226C6.18627 11.6399 6.20608 11.4388 6.16749 11.2449C6.12891 11.0509 6.03367 10.8727 5.89381 10.7328C5.75396 10.593 5.57578 10.4977 5.3818 10.4592C5.18782 10.4206 4.98675 10.4404 4.80402 10.5161C4.6213 10.5917 4.46512 10.7199 4.35524 10.8844C4.24536 11.0488 4.18671 11.2422 4.18671 11.4399C4.18671 11.7052 4.29206 11.9595 4.4796 12.147C4.66714 12.3346 4.92149 12.4399 5.18671 12.4399ZM17.1867 2.43994H16.1867V1.43994C16.1867 1.17472 16.0814 0.920371 15.8938 0.732835C15.7063 0.545298 15.4519 0.439941 15.1867 0.439941C14.9215 0.439941 14.6671 0.545298 14.4796 0.732835C14.2921 0.920371 14.1867 1.17472 14.1867 1.43994V2.43994H6.18671V1.43994C6.18671 1.17472 6.08135 0.920371 5.89381 0.732835C5.70628 0.545298 5.45192 0.439941 5.18671 0.439941C4.92149 0.439941 4.66714 0.545298 4.4796 0.732835C4.29206 0.920371 4.18671 1.17472 4.18671 1.43994V2.43994H3.18671C2.39106 2.43994 1.628 2.75601 1.06539 3.31862C0.502777 3.88123 0.186707 4.64429 0.186707 5.43994V17.4399C0.186707 18.2356 0.502777 18.9987 1.06539 19.5613C1.628 20.1239 2.39106 20.4399 3.18671 20.4399H17.1867C17.9824 20.4399 18.7454 20.1239 19.308 19.5613C19.8706 18.9987 20.1867 18.2356 20.1867 17.4399V5.43994C20.1867 4.64429 19.8706 3.88123 19.308 3.31862C18.7454 2.75601 17.9824 2.43994 17.1867 2.43994ZM18.1867 17.4399C18.1867 17.7052 18.0814 17.9595 17.8938 18.147C17.7063 18.3346 17.4519 18.4399 17.1867 18.4399H3.18671C2.92149 18.4399 2.66714 18.3346 2.4796 18.147C2.29206 17.9595 2.18671 17.7052 2.18671 17.4399V8.43994H18.1867V17.4399ZM18.1867 6.43994H2.18671V5.43994C2.18671 5.17473 2.29206 4.92037 2.4796 4.73283C2.66714 4.5453 2.92149 4.43994 3.18671 4.43994H17.1867C17.4519 4.43994 17.7063 4.5453 17.8938 4.73283C18.0814 4.92037 18.1867 5.17473 18.1867 5.43994V6.43994ZM5.18671 16.4399C5.38449 16.4399 5.57783 16.3813 5.74228 16.2714C5.90673 16.1615 6.0349 16.0054 6.11059 15.8226C6.18627 15.6399 6.20608 15.4388 6.16749 15.2449C6.12891 15.0509 6.03367 14.8727 5.89381 14.7328C5.75396 14.593 5.57578 14.4977 5.3818 14.4592C5.18782 14.4206 4.98675 14.4404 4.80402 14.5161C4.6213 14.5917 4.46512 14.7199 4.35524 14.8844C4.24536 15.0488 4.18671 15.2422 4.18671 15.4399C4.18671 15.7052 4.29206 15.9595 4.4796 16.147C4.66714 16.3346 4.92149 16.4399 5.18671 16.4399Z"
+                fill="#8D8E92"
+              />
+            </svg>
+            <vc-date-picker
+              class="absolute time-picker"
+              @mouseover="selectSince = true"
+              v-if="selectSince"
+              v-model="sinceDateShow"
+              mode="date"
+            />
+          </div>
+        </div>
+        <div
+          @mouseover="selectUntil = true"
+          @mouseleave="selectUntil = false"
+          class="relative pl-4"
+        >
+          <input
+            disabled
+            v-model="untilDateShow"
+            class="input-type"
+            type="text"
+          />
+          <svg
+            class="icon-date"
+            width="21"
+            height="21"
+            viewBox="0 0 21 21"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10.1867 12.4399C10.3845 12.4399 10.5778 12.3813 10.7423 12.2714C10.9067 12.1615 11.0349 12.0054 11.1106 11.8226C11.1863 11.6399 11.2061 11.4388 11.1675 11.2449C11.1289 11.0509 11.0337 10.8727 10.8938 10.7328C10.754 10.593 10.5758 10.4977 10.3818 10.4592C10.1878 10.4206 9.98675 10.4404 9.80402 10.5161C9.6213 10.5917 9.46512 10.7199 9.35524 10.8844C9.24536 11.0488 9.18671 11.2422 9.18671 11.4399C9.18671 11.7052 9.29206 11.9595 9.4796 12.147C9.66714 12.3346 9.92149 12.4399 10.1867 12.4399ZM15.1867 12.4399C15.3845 12.4399 15.5778 12.3813 15.7423 12.2714C15.9067 12.1615 16.0349 12.0054 16.1106 11.8226C16.1863 11.6399 16.2061 11.4388 16.1675 11.2449C16.1289 11.0509 16.0337 10.8727 15.8938 10.7328C15.754 10.593 15.5758 10.4977 15.3818 10.4592C15.1878 10.4206 14.9867 10.4404 14.804 10.5161C14.6213 10.5917 14.4651 10.7199 14.3552 10.8844C14.2454 11.0488 14.1867 11.2422 14.1867 11.4399C14.1867 11.7052 14.2921 11.9595 14.4796 12.147C14.6671 12.3346 14.9215 12.4399 15.1867 12.4399ZM10.1867 16.4399C10.3845 16.4399 10.5778 16.3813 10.7423 16.2714C10.9067 16.1615 11.0349 16.0054 11.1106 15.8226C11.1863 15.6399 11.2061 15.4388 11.1675 15.2449C11.1289 15.0509 11.0337 14.8727 10.8938 14.7328C10.754 14.593 10.5758 14.4977 10.3818 14.4592C10.1878 14.4206 9.98675 14.4404 9.80402 14.5161C9.6213 14.5917 9.46512 14.7199 9.35524 14.8844C9.24536 15.0488 9.18671 15.2422 9.18671 15.4399C9.18671 15.7052 9.29206 15.9595 9.4796 16.147C9.66714 16.3346 9.92149 16.4399 10.1867 16.4399ZM15.1867 16.4399C15.3845 16.4399 15.5778 16.3813 15.7423 16.2714C15.9067 16.1615 16.0349 16.0054 16.1106 15.8226C16.1863 15.6399 16.2061 15.4388 16.1675 15.2449C16.1289 15.0509 16.0337 14.8727 15.8938 14.7328C15.754 14.593 15.5758 14.4977 15.3818 14.4592C15.1878 14.4206 14.9867 14.4404 14.804 14.5161C14.6213 14.5917 14.4651 14.7199 14.3552 14.8844C14.2454 15.0488 14.1867 15.2422 14.1867 15.4399C14.1867 15.7052 14.2921 15.9595 14.4796 16.147C14.6671 16.3346 14.9215 16.4399 15.1867 16.4399ZM5.18671 12.4399C5.38449 12.4399 5.57783 12.3813 5.74228 12.2714C5.90673 12.1615 6.0349 12.0054 6.11059 11.8226C6.18627 11.6399 6.20608 11.4388 6.16749 11.2449C6.12891 11.0509 6.03367 10.8727 5.89381 10.7328C5.75396 10.593 5.57578 10.4977 5.3818 10.4592C5.18782 10.4206 4.98675 10.4404 4.80402 10.5161C4.6213 10.5917 4.46512 10.7199 4.35524 10.8844C4.24536 11.0488 4.18671 11.2422 4.18671 11.4399C4.18671 11.7052 4.29206 11.9595 4.4796 12.147C4.66714 12.3346 4.92149 12.4399 5.18671 12.4399ZM17.1867 2.43994H16.1867V1.43994C16.1867 1.17472 16.0814 0.920371 15.8938 0.732835C15.7063 0.545298 15.4519 0.439941 15.1867 0.439941C14.9215 0.439941 14.6671 0.545298 14.4796 0.732835C14.2921 0.920371 14.1867 1.17472 14.1867 1.43994V2.43994H6.18671V1.43994C6.18671 1.17472 6.08135 0.920371 5.89381 0.732835C5.70628 0.545298 5.45192 0.439941 5.18671 0.439941C4.92149 0.439941 4.66714 0.545298 4.4796 0.732835C4.29206 0.920371 4.18671 1.17472 4.18671 1.43994V2.43994H3.18671C2.39106 2.43994 1.628 2.75601 1.06539 3.31862C0.502777 3.88123 0.186707 4.64429 0.186707 5.43994V17.4399C0.186707 18.2356 0.502777 18.9987 1.06539 19.5613C1.628 20.1239 2.39106 20.4399 3.18671 20.4399H17.1867C17.9824 20.4399 18.7454 20.1239 19.308 19.5613C19.8706 18.9987 20.1867 18.2356 20.1867 17.4399V5.43994C20.1867 4.64429 19.8706 3.88123 19.308 3.31862C18.7454 2.75601 17.9824 2.43994 17.1867 2.43994ZM18.1867 17.4399C18.1867 17.7052 18.0814 17.9595 17.8938 18.147C17.7063 18.3346 17.4519 18.4399 17.1867 18.4399H3.18671C2.92149 18.4399 2.66714 18.3346 2.4796 18.147C2.29206 17.9595 2.18671 17.7052 2.18671 17.4399V8.43994H18.1867V17.4399ZM18.1867 6.43994H2.18671V5.43994C2.18671 5.17473 2.29206 4.92037 2.4796 4.73283C2.66714 4.5453 2.92149 4.43994 3.18671 4.43994H17.1867C17.4519 4.43994 17.7063 4.5453 17.8938 4.73283C18.0814 4.92037 18.1867 5.17473 18.1867 5.43994V6.43994ZM5.18671 16.4399C5.38449 16.4399 5.57783 16.3813 5.74228 16.2714C5.90673 16.1615 6.0349 16.0054 6.11059 15.8226C6.18627 15.6399 6.20608 15.4388 6.16749 15.2449C6.12891 15.0509 6.03367 14.8727 5.89381 14.7328C5.75396 14.593 5.57578 14.4977 5.3818 14.4592C5.18782 14.4206 4.98675 14.4404 4.80402 14.5161C4.6213 14.5917 4.46512 14.7199 4.35524 14.8844C4.24536 15.0488 4.18671 15.2422 4.18671 15.4399C4.18671 15.7052 4.29206 15.9595 4.4796 16.147C4.66714 16.3346 4.92149 16.4399 5.18671 16.4399Z"
+              fill="#8D8E92"
+            />
+          </svg>
+          <vc-date-picker
+            class="absolute time-picker"
+            @mouseover="selectUntil = true"
+            v-if="selectUntil"
+            v-model="untilDate"
+            mode="date"
+          />
+        </div>
+      </div>
+    </div>
     <v-data-table
       :headers="headers"
-      :items="orderList"
-      :items-per-page="9"
-      class="elevation-1 mt-5"
-    >
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColor(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-    </v-data-table>
-    <div v-if="loading" id="loader-wrapper">
-      <div id="loader"></div>
-    </div>
-    <div class="pt-5 d-flex justify-end">
-      <export-excel
-        class="btn btn-default"
-        :data="orderList"
-        :fields="json_fields"
-        worksheet="sheet-order"
-        name="donhang"
-      >
-        <v-btn @click="exportExcel()">
-          <v-icon> mdi-download </v-icon>
-          Xuất Excel
-        </v-btn>
-      </export-excel>
-    </div>
+      :items="desserts"
+      :sort-by="['calories', 'fat']"
+      :sort-desc="[false, true]"
+      multi-sort
+      class="elevation-1"
+    ></v-data-table>
   </div>
 </template>
 <script>
+import * as checkPermision from "../../../permission/checkPermission";
 import * as convertId from "../../../function/converIdUser";
+import * as get from "../../../api/user/getListF0";
 import * as order from "../../../api/statistic/order";
-import * as getUserId from "../../../api/user/getUserId";
-import * as permission from "../../../permission/checkPermission";
 export default {
   data() {
     return {
-      startDate: new Date(),
-      endDate: new Date(),
-      picker: "",
-      btnSelectToDate: false,
-      user: [],
-      selectUser: "user001",
-      timeline: "",
-      times: [
+      headers: [
+        {
+          text: "Đối tác",
+          align: "start",
+          sortable: false,
+          value: "partner",
+        },
+
+        { text: "Mã user", value: "user" },
+        { text: "Số lượng", value: "count" },
+        { text: "Hoa hồng", value: "sum" },
+      ],
+      desserts: [],
+      selectUntil: false,
+      selectSince: false,
+      selectUntilDate: new Date(),
+      selectSinceDate: new Date(),
+      showSelectDate: false,
+      selectOption: "",
+      itemsTime: [
         "Hôm nay",
         "Hôm qua",
-        "Tuần này",
-        "Tuần trước",
         "Tháng này",
         "Tháng trước",
         "Chọn thời gian",
       ],
-      orderList: [{}],
-      sinceDate: "",
-      untilDate: "",
-      selectToDate: false,
-      loading: true,
-      totalOrderCommission: 0,
-      headers: [
-        {
-          text: "Thời gian mua",
-          align: "start",
-          value: "sales_time",
-        },
-        {
-          text: "Advertisers",
-          align: "start",
-          value: "merchant",
-        },
-        {
-          text: "Trạng thái",
-          align: "start",
-          value: "status",
-        },
-        {
-          text: "Hoa hồng",
-          align: "start",
-          value: "commission",
-        },
-        {
-          text: "Mã user",
-          align: "start",
-          value: "idUser",
-        },
-      ],
-      json_fields: {
-        "Thời gian mua": "sales_time",
-        Advertisers: "merchant",
-        "Trạng thái": "status",
-        "Hoa hồng": "commission",
-        "Mã user": "idUser",
+      sinceDate: new Date(),
+      untilDate: new Date(),
+      untilDateShow: "",
+      sinceDateShow: "",
+      options: {
+        timeZone: "UTC",
       },
-      json_meta: [
-        [
-          {
-            key: "charset",
-            value: "utf-8",
-          },
-        ],
-      ],
+      selectUser: convertId.convertId(sessionStorage.getItem("IdUser")),
+      itemsUser: [],
+      timezone: "",
     };
   },
   async created() {
-    this.sinceDate = new Date();
-    this.untilDate = new Date();
-    await this.getOrders(0, 0);
-    if ((await permission.checkPermission()) == 0) {
-      await this.getUserId();
-    }
+    await this.resetTime();
+    this.sinceDateShow = this.sinceDate.toISOString();
+    this.untilDateShow = this.untilDate.toISOString();
   },
 
-  async mounted() {},
-  methods: {
-    async getOrders(minusDate, spaceDate) {
-      this.selectToDate = false;
-      this.sinceDate.setHours(7, 0, 0, 0);
-      this.untilDate.setHours(30, 59, 59, 0);
-      this.sinceDate.setDate(this.sinceDate.getDate() - minusDate);
-      this.untilDate.setDate(this.untilDate.getDate() - spaceDate);
-      const since = this.sinceDate.toISOString();
-      const until = this.untilDate.toISOString();
-      this.loading = true;
-      const id =
-        (await permission.checkPermission()) == 0
-          ? this.selectUser
-          : convertId.convertId(sessionStorage.getItem("IdUser"));
-      const data = await order.getOrders(since, until, id);
-      this.loading = false;
-      this.orderList = data;
-      this.totalOrderCommission = this.countTotalCommission(this.orderList);
-    },
-    async getOrdersCurrentMonth() {
-      this.selectToDate = false;
-      var date = new Date();
-      this.sinceDate.setHours(7, 0, 0, 0);
-      this.untilDate.setHours(30, 59, 59, 0);
-      this.sinceDate = new Date(date.getFullYear(), date.getMonth(), 2);
-      const since = this.sinceDate.toISOString();
-      const until = this.untilDate.toISOString();
-      this.loading = true;
-      const id =
-        (await permission.checkPermission()) == 0
-          ? this.selectUser
-          : convertId.convertId(sessionStorage.getItem("IdUser"));
-      const data = await order.getOrders(since, until, id);
-      this.loading = false;
-      this.orderList = data;
-      this.totalOrderCommission = this.countTotalCommission(this.orderList);
-    },
-
-    async getOrdersLastMonth() {
-      this.selectToDate = false;
-      var currentDate = new Date();
-      this.sinceDate = new Date();
-      this.sinceDate.setDate(1);
-      this.sinceDate.setMonth(this.sinceDate.getMonth() - 1);
-      this.sinceDate.setHours(7, 0, 0, 0);
-      this.untilDate.setHours(30, 59, 59, 0);
-      this.untilDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
+  async mounted() {
+    const roles = await checkPermision.checkPermission();
+    let listUser = [];
+    if (roles == 0) {
+      listUser = await get.getAllUser();
+      listUser.forEach((user) => {
+        this.itemsUser.push(convertId.convertId(user.user_id));
+      });
+    } else {
+      listUser = await get.getListChildUser(
+        convertId.convertId(sessionStorage.getItem("IdUser"))
       );
-      const since = this.sinceDate.toISOString();
-      const until = this.untilDate.toISOString();
-      this.loading = true;
-      const id =
-        (await permission.checkPermission()) == 0
-          ? this.selectUser
-          : convertId.convertId(sessionStorage.getItem("IdUser"));
-      const data = await order.getOrders(since, until, id);
-      this.loading = false;
-      this.orderList = data;
-      this.totalOrderCommission = this.countTotalCommission(this.orderList);
-    },
-
-    async getLastWeek() {
-      var d = new Date();
-
-      // set to Monday of this week
-      d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-
-      // set to previous Monday
-      d.setDate(d.getDate() - 7);
-      this.sinceDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      this.untilDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6);
-      this.sinceDate.setHours(7, 0, 0, 0);
-      this.untilDate.setHours(30, 59, 59, 0);
-      const since = this.sinceDate.toISOString();
-      const until = this.untilDate.toISOString();
-      this.loading = true;
-      const id =
-        (await permission.checkPermission()) == 0
-          ? this.selectUser
-          : convertId.convertId(sessionStorage.getItem("IdUser"));
-      const data = await order.getOrders(since, until, id);
-      this.loading = false;
-      this.orderList = data;
-      this.totalOrderCommission = this.countTotalCommission(this.orderList);
-    },
-
-    async getCurrentWeek() {
-      var d = new Date();
-      d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-      this.sinceDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      this.untilDate = new Date();
-      this.sinceDate.setHours(7, 0, 0, 0);
-      this.untilDate.setHours(30, 59, 59, 0);
-      const since = this.sinceDate.toISOString();
-      const until = this.untilDate.toISOString();
-      console.log(since);
-      console.log(until);
-      this.loading = true;
-      const id =
-        (await permission.checkPermission()) == 0
-          ? this.selectUser
-          : convertId.convertId(sessionStorage.getItem("IdUser"));
-      const data = await order.getOrders(since, until, id);
-      this.loading = false;
-      this.orderList = data;
-      this.totalOrderCommission = this.countTotalCommission(this.orderList);
-    },
-
-    getColor(status) {
-      if (status == "Tạm duyệt") return "green";
-      else if (status == "Chờ xử lý") return "orange";
-      else return "red";
-    },
-    newOrders() {
+      listUser.forEach((user) => {
+        this.itemsUser.push(convertId.convertId(user.user_id));
+      });
+    }
+  },
+  methods: {
+    resetTime() {
       this.sinceDate = new Date();
       this.untilDate = new Date();
-      switch (this.timeline) {
-        case "Hôm nay":
-          this.getOrders(0, 0);
-          break;
-        case "Hôm qua":
-          this.getOrders(1, 1);
-          break;
-        case "Tuần này":
-          this.getCurrentWeek();
-          break;
-        case "Tuần trước":
-          this.getLastWeek();
-          break;
-        case "Tháng này":
-          this.getOrdersCurrentMonth();
-          break;
-        case "Tháng trước":
-          this.getOrdersLastMonth();
-          break;
-        default:
-          this.getOrders(0, 0);
-      }
+      this.sinceDate.setUTCHours(0, 0, 0, 0);
+      this.untilDate.setUTCHours(23, 59, 59);
     },
-    countTotalCommission(arr) {
-      var totalValue = 0;
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].status == "Tạm duyệt") {
-          totalValue = totalValue + arr[i].commission;
-        }
-      }
-      return totalValue;
-    },
-    showSelectDate() {
-      if (this.timeline == "Chọn thời gian") {
-        this.selectToDate = true;
-        this.btnSelectToDate = false;
-      } else {
-        this.btnSelectToDate = true;
-        this.selectToDate = false;
-      }
-    },
-    async getOrderToDate() {
-      const selectSinceDate = new Date(this.startDate);
-      const selectUntilDate = new Date(this.endDate);
-      const diffTime = Math.abs(selectUntilDate - selectSinceDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      if (diffDays < 31) {
-        selectSinceDate.setHours(7, 0, 0, 0);
-        selectUntilDate.setHours(30, 59, 59, 0);
-        this.sinceDate = selectSinceDate;
-        this.untilDate =  selectUntilDate;
-        const since = selectSinceDate.toISOString();
-        const until = selectUntilDate.toISOString();
-        this.loading = true;
-        const id =
-          (await permission.checkPermission()) == 0
-            ? this.selectUser
-            : convertId.convertId(sessionStorage.getItem("IdUser"));
-        const data = await order.getOrders(since, until, id);
-        this.loading = false;
-        this.orderList = data;
-        this.totalOrderCommission = this.countTotalCommission(this.orderList);
-      } else {
-        alert("Lỗi chọn ngày ( khoảng cách 2 ngày phải < 31 )");
-        return 0;
-      }
-    },
-    async getUserId() {
-      let listUser = await getUserId.getUserId();
-      this.user = listUser.sort();
-    },
-    converDate(date) {
-      const dateTimetoDay = date.split("T")[0].split("-");
-      return dateTimetoDay[2] + "-" + dateTimetoDay[1] + "-" + dateTimetoDay[0];
-    },
-    exportExcel() {
-      console.log(this.orderList);
+    getOrder: async function() {
+      const data = await order.getOrderGroupUser(
+        this.selectUser,
+        this.sinceDate,
+        this.untilDate
+      );
+      console.log(data);
+      data.forEach((element) => {
+        const value = {};
+        value.partner = element.merchant;
+        value.user = element.utm_source;
+        value.count = element["COUNT(order_id)"];
+        value.sum = element["SUM(reality_commission)"].toLocaleString("it-IT", {
+          style: "currency",
+          currency: "VND",
+        });
+        this.desserts.push(value);
+      });
     },
   },
   computed: {},
-  watch: {},
+  watch: {
+    selectOption: function() {
+      this.resetTime();
+      switch (this.selectOption) {
+        case "Hôm nay": {
+          this.showSelectDate = false;
+          console.log(this.sinceDate.toISOString());
+          console.log(this.untilDate.toISOString());
+          this.getOrder();
+          break;
+        }
+        case "Hôm qua": {
+          this.showSelectDate = false;
+          this.sinceDate.setUTCHours(0, 0, 0, 0);
+          this.untilDate.setUTCHours(23, 59, 59);
+          this.sinceDate.setDate(this.sinceDate.getDate() - 1);
+          this.untilDate.setDate(this.untilDate.getDate() - 1);
+          console.log(this.sinceDate.toISOString());
+          console.log(this.untilDate.toISOString());
+          this.getOrder();
+          break;
+        }
+        case "Tháng này": {
+          this.showSelectDate = false;
+          var date = new Date();
+          this.sinceDate = new Date(date.getFullYear(), date.getMonth(), 2);
+          this.untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+          this.sinceDate.setUTCHours(0, 0, 0, 0);
+          this.untilDate.setUTCHours(23, 59, 59);
+          console.log(this.sinceDate.toISOString());
+          console.log(this.untilDate.toISOString());
+          this.getOrder();
+          break;
+        }
+        case "Tháng trước": {
+          this.showSelectDate = false;
+          var date2 = new Date();
+          this.sinceDate = new Date(
+            date2.getFullYear(),
+            date2.getMonth() - 1,
+            2
+          );
+          this.untilDate = new Date(date2.getFullYear(), date2.getMonth(), 0);
+          this.sinceDate.setUTCHours(0, 0, 0, 0);
+          this.untilDate.setUTCHours(23, 59, 59);
+          console.log(this.sinceDate.toISOString());
+          console.log(this.untilDate.toISOString());
+          this.getOrder();
+          break;
+        }
+        case "Chọn thời gian": {
+          this.sinceDate = new Date();
+          this.untilDate = new Date();
+          this.resetTime();
+          this.showSelectDate = true;
+          break;
+        }
+      }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
+.relative {
+  width: 300px;
+  position: relative;
+}
+.time-picker {
+  top: 100%;
+  left: 10px;
+}
+.absolute {
+  position: absolute;
+}
 .date__input {
   border: solid 1px;
   border-radius: 5px;
@@ -403,5 +294,27 @@ export default {
 }
 .height-full {
   height: 100vh;
+}
+.v-text-field__details {
+  position: absolute !important;
+}
+.input-type {
+  width: 100%;
+  border-radius: 5px;
+  background: #ffffff;
+  opacity: 0.7;
+  padding: 5px 20px;
+  border: 1px solid #d0d0d0;
+  box-sizing: border-box;
+}
+.input-type:hover,
+.icon-date:hover {
+  cursor: pointer;
+}
+.icon-date {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

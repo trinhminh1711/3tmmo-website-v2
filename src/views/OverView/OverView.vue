@@ -124,7 +124,7 @@
 import * as convertId from "../../function/converIdUser";
 import * as getOrder from "../../api/statistic/orderByTime";
 import * as sumYearIncome from "../../api/statistic/getSumYear";
-import * as rank from "../../api/statistic/rankUser";
+//import * as rank from "../../api/statistic/rankUser";
 export default {
   data() {
     return {
@@ -150,10 +150,6 @@ export default {
     this.getInComeMonth();
     this.getInComeLastDay();
     this.getInComeYear();
-    this.getRankDay();
-    this.getRankMonth();
-    this.getRankLastDay();
-    this.getRankYear();
   },
   methods: {
     converMoney(income) {
@@ -224,121 +220,6 @@ export default {
       } else {
         this.lastDayIncome = 0;
       }
-    },
-    async getRankLastDay() {
-      var sinceDate = new Date();
-      sinceDate.setDate(sinceDate.getDate() - 1);
-      sinceDate.setUTCHours(0, 0, 0, 0);
-      var untilDate = new Date();
-      untilDate.setDate(sinceDate.getDate());
-      untilDate.setUTCHours(23, 59, 59, 99);
-      const data = await rank.getRankTime(
-        sinceDate.toISOString(),
-        untilDate.toISOString()
-      );
-      const rankNumber = await this.filterRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-      if (rankNumber == 1) {
-        this.lastDayRank = "Top 1";
-        this.topmonth = true;
-      } else {
-        this.lastDayRank = rankNumber;
-      }
-      this.commitRankLastDay = await this.commitRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-    },
-
-    async getRankYear() {
-      var firstDay = new Date(new Date().getFullYear(), 0, 1, 7);
-      var date = new Date();
-      date.setHours(7, 0, 0, 0);
-      const data = await rank.getRankTime(
-        firstDay.toISOString(),
-        date.toISOString()
-      );
-      const rankNumber = await this.filterRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-      if (rankNumber == 1) {
-        this.yearRank = "Top 1";
-      } else {
-        this.yearRank = rankNumber;
-      }
-      this.commitRankYear = await this.commitRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-    },
-    async getRankMonth() {
-      const now = new Date();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 7, 0, 1);
-      const endDay = new Date(now.getFullYear(), now.getMonth() + 1, 1, 7);
-      const data = await rank.getRankTime(
-        firstDay.toISOString(),
-        endDay.toISOString()
-      );
-      const rankNumber = await this.filterRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-      this.commitRankMonth = await this.commitRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-
-      if (rankNumber == 1) {
-        this.monthRank = "Top 1";
-      } else {
-        this.monthRank = rankNumber;
-      }
-    },
-    async getRankDay() {
-      var sinceDate = new Date();
-      sinceDate.setUTCHours(0, 0, 0, 0);
-      var untilDate = new Date();
-      untilDate.setUTCHours(23, 59, 59, 999);
-      const data = await rank.getRankTime(
-        sinceDate.toISOString(),
-        untilDate.toISOString()
-      );
-      this.commitRankDay = await this.commitRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-      const rankNumber = await this.filterRankUser(
-        convertId.convertId(sessionStorage.getItem("IdUser")),
-        data
-      );
-      if (rankNumber == 1) {
-        this.dayRank = "Top 1";
-      } else {
-        this.dayRank = rankNumber;
-      }
-    },
-    async filterRankUser(id, rankData) {
-      for (let i = 0; i < rankData.length; i++) {
-        if (rankData[i].utm_source == id) {
-          return i + 1;
-        } else {
-          return "Chưa có thông tin";
-        }
-      }
-    },
-    async commitRankUser(id, rankData) {
-      for (let i = 0; i < rankData.length; i++) {
-        if (rankData[i].utm_source == id) {
-          return (
-            rankData[i - 1]["SUM(reality_commission)"] -
-            rankData[i]["SUM(reality_commission)"]
-          );
-        }
-      }
-      return 0;
     },
   },
 };

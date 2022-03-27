@@ -5,11 +5,15 @@ import vuetify from "./plugins/vuetify";
 import { store } from "./store/store";
 import excel from "vue-excel-export";
 import { VueEditor } from "vue2-editor";
+import VCalendar from "v-calendar";
 import axios from "axios";
 axios.defaults.headers.common["Authorization"] =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0ODI4Nzk5NiwiZXhwIjoxNjQ4MjkxNTk2fQ.cBsuzhwh-Kw54Qjv0cSPQ1qHCASBAIVSvcl8nc8Gya4";
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0ODQwMDMxMywiZXhwIjoxNjQ4NDAzOTEzfQ.60Koo38U5tZkUG9KYT82YSO59w-CioSbV6YhGqAGPZ0";
 Vue.config.productionTip = false;
 Vue.use(excel);
+Vue.use(VCalendar, {
+  componentPrefix: "vc",
+});
 new Vue({
   router,
   vuetify,

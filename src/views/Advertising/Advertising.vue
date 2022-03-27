@@ -2,7 +2,7 @@
   <div style="height: 90vh">
     <h2>Hệ thống giới thiệu</h2>
     <v-container class="mt-5" fluid>
-      <v-row>
+      <v-row class="d-flex justify-space-between">
         <v-col cols="2" class="pa-0 mr-5">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -23,7 +23,7 @@
             >
           </v-tooltip>
         </v-col>
-        <v-col cols="6" class="pa-0 d-flex align-center">
+        <v-col cols="5" class="pa-0 d-flex align-center ml-5">
           <a target="_blank" :href="link_ads" id="link-Ads" class="mx-5">{{
             link_ads
           }}</a>
@@ -138,7 +138,7 @@ export default {
             objEmty.id = dataUser[i].id;
             objEmty.username = dataUser[i].username;
             objEmty.name = dataUser[i].name;
-            objEmty.rank = j;
+            objEmty.rank = j+1;
             emptyArr.push(objEmty);
           }
         }
