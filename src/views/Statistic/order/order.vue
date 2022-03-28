@@ -126,8 +126,11 @@ export default {
         },
 
         { text: "Mã user", value: "user" },
-        { text: "Số lượng", value: "count" },
+        { text: "Tổng số đơn", value: "count" },
         { text: "Hoa hồng", value: "sum" },
+        { text: "Tạm duyệt", value: "approved" },
+        { text: "Chờ xử lý", value: "pending" },
+        { text: "Bị hủy", value: "rejected" },
       ],
       desserts: [],
       selectUntil: false,
@@ -185,15 +188,36 @@ export default {
       this.sinceDate.setUTCHours(0, 0, 0, 0);
       this.untilDate.setUTCHours(23, 59, 59);
     },
-    getOrder: async function() {
+
+    getOrder: async function () {
       const data = await order.getOrderGroupUser(
         this.selectUser,
         this.sinceDate,
         this.untilDate
       );
-      console.log(data);
-      data.forEach((element) => {
+      data.forEach(async (element) => {
         const value = {};
+        const getApproved = await order.getStatusGroup(
+          this.sinceDate,
+          this.untilDate,
+          this.selectUser,
+          "1",
+          element.merchant
+        );
+        const getPending = await order.getStatusGroup(
+          this.sinceDate,
+          this.untilDate,
+          this.selectUser,
+          "0",
+          element.merchant
+        );
+        const getRejected = await order.getStatusGroup(
+          this.sinceDate,
+          this.untilDate,
+          this.selectUser,
+          "2",
+          element.merchant
+        );
         value.partner = element.merchant;
         value.user = element.utm_source;
         value.count = element["COUNT(order_id)"];
@@ -201,13 +225,17 @@ export default {
           style: "currency",
           currency: "VND",
         });
+        value.approved = getApproved[0]["COUNT(order_id)"];
+        value.pending = getPending[0]["COUNT(order_id)"];
+        value.rejected = getRejected[0]["COUNT(order_id)"];
         this.desserts.push(value);
       });
+      console.log(this.desserts);
     },
   },
   computed: {},
   watch: {
-    selectOption: function() {
+    selectOption: function () {
       this.resetTime();
       switch (this.selectOption) {
         case "Hôm nay": {
