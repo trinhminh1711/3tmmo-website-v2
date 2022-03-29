@@ -56,14 +56,16 @@ const routes = [
         children: [
           {
             path: 'order',
-            component: StatisticOrder
+            component: StatisticOrder,
+            name : 'order'
           },
 
         ]
       },
       {
         path: 'notification',
-        component: Notification
+        component: Notification,
+        name : 'notification'
       },
     ],
   },

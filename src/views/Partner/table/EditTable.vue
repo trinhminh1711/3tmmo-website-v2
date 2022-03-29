@@ -38,6 +38,9 @@
       label="Kí hiệu"
       clearable
     ></v-text-field>
+    <v-alert border="bottom" colored-border type="warning" elevation="2">
+      Lưu ý : Tỷ lệ hoa hồng khi chỉnh sửa sẽ chỉ được áp dụng cho các đơn hàng <strong style="color:red">từ thời điểm chỉnh sửa</strong>
+    </v-alert>
     <v-btn class="mt-2" @click="updatePartner()" color="success">
       <v-icon> mdi-file-check</v-icon> Lưu thay đổi</v-btn
     >
@@ -108,6 +111,7 @@ export default {
         parseInt(this.partnerEdit.percentage)
       );
       alert("update thành công");
+      location.reload();
     },
     deletePartner() {
       this.confirmDelete = !this.confirmDelete;

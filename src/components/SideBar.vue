@@ -43,13 +43,13 @@
           </router-link>
         </li>
         <li class="item">
-          <router-link to="statistic/order">
+          <router-link :to="{name : 'order'}">
             <i class="fas fa-indent"></i>
             Thống kê
           </router-link>
         </li>
         <li v-if="showAdmin" class="item">
-          <router-link to="notification">
+          <router-link :to="{name : 'notification'}">
             <i class="fas fa-bullhorn"></i>
             Hệ thống thông báo
           </router-link>

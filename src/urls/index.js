@@ -11,7 +11,7 @@ const urls = {
     addUser: "http://localhost:3000/customers/",
     password: "http://localhost:3000/password/",
     updatePassword: "http://localhost:3000/update/password/",
-    posterity: "http://localhost:3000/posterity/",
+    posterity: "http://localhost:3000/posterity",
     updateInfo: "http://localhost:3000/update/info/customers/",
     permission: "http://localhost:3000/permission/",
     getIdUser: "http://localhost:3000/userid",

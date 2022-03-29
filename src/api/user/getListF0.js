@@ -2,8 +2,8 @@ const axios = require("axios").default;
 import * as func from "../../function/converIdUser";
 import urls from "../../urls";
 
-export async function getListChildUser() {
-  const res = await axios.get(urls.User.posterity);
+export async function getListChildUser(idUser) {
+  const res = await axios.get(urls.User.posterity, { params: { id: idUser } });
   return res.data;
 }
 

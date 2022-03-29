@@ -3,8 +3,8 @@
     <div class="d-flex align-center">
       <h2 class="ml-3">Thống kê đơn hàng</h2>
       <v-alert class="ml-5 mr-0" dense type="info">
-        Từ <strong class="mx-2">{{ sinceDate.toISOString() }}</strong
-        >đến<strong class="mx-2">{{ untilDate.toISOString() }}</strong>
+        Từ <strong class="mx-2">{{ formatIsoTime(sinceDate) }}</strong
+        >đến<strong class="mx-2">{{ formatIsoTime(untilDate) }}</strong>
       </v-alert>
     </div>
     <div class="d-flex align-center mt-5">
@@ -39,7 +39,7 @@
           >
             <input
               disabled
-              v-model="sinceDateShow"
+              :placeholder="formatIsoTime(sinceDateShow)"
               class="input-type"
               type="text"
             />
@@ -72,7 +72,7 @@
         >
           <input
             disabled
-            v-model="untilDateShow"
+            :placeholder="formatIsoTime(untilDateShow)"
             class="input-type"
             type="text"
           />
@@ -93,7 +93,7 @@
             class="absolute time-picker"
             @mouseover="selectUntil = true"
             v-if="selectUntil"
-            v-model="untilDate"
+            v-model="untilDateShow"
             mode="date"
           />
         </div>
@@ -102,10 +102,7 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
-      :sort-by="['calories', 'fat']"
-      :sort-desc="[false, true]"
-      multi-sort
-      class="elevation-1"
+      class="ml-5 mt-10"
     ></v-data-table>
   </div>
 </template>
@@ -122,12 +119,12 @@ export default {
           text: "Đối tác",
           align: "start",
           sortable: false,
-          value: "partner",
+          value: "merchant",
         },
 
-        { text: "Mã user", value: "user" },
-        { text: "Tổng số đơn", value: "count" },
-        { text: "Hoa hồng", value: "sum" },
+        { text: "Mã user", value: "utm_source" },
+        { text: "Tổng số đơn", value: "countTotal" },
+        { text: "Hoa hồng (Tạm duyệt )", value: "sum" },
         { text: "Tạm duyệt", value: "approved" },
         { text: "Chờ xử lý", value: "pending" },
         { text: "Bị hủy", value: "rejected" },
@@ -148,8 +145,8 @@ export default {
       ],
       sinceDate: new Date(),
       untilDate: new Date(),
-      untilDateShow: "",
-      sinceDateShow: "",
+      untilDateShow: new Date(),
+      sinceDateShow: new Date(),
       options: {
         timeZone: "UTC",
       },
@@ -160,8 +157,8 @@ export default {
   },
   async created() {
     await this.resetTime();
-    this.sinceDateShow = this.sinceDate.toISOString();
-    this.untilDateShow = this.untilDate.toISOString();
+    this.untilDateShow.setUTCHours(0, 0, 0, 0);
+    this.sinceDateShow.setUTCHours(0, 0, 0, 0);
   },
 
   async mounted() {
@@ -189,86 +186,51 @@ export default {
       this.untilDate.setUTCHours(23, 59, 59);
     },
 
-    getOrder: async function () {
-      const data = await order.getOrderGroupUser(
+    getOrder: async function() {
+      this.desserts = await order.getOrderGroupUser(
         this.selectUser,
-        this.sinceDate,
-        this.untilDate
+        this.sinceDate.toISOString(),
+        this.untilDate.toISOString()
       );
-      data.forEach(async (element) => {
-        const value = {};
-        const getApproved = await order.getStatusGroup(
-          this.sinceDate,
-          this.untilDate,
-          this.selectUser,
-          "1",
-          element.merchant
-        );
-        const getPending = await order.getStatusGroup(
-          this.sinceDate,
-          this.untilDate,
-          this.selectUser,
-          "0",
-          element.merchant
-        );
-        const getRejected = await order.getStatusGroup(
-          this.sinceDate,
-          this.untilDate,
-          this.selectUser,
-          "2",
-          element.merchant
-        );
-        value.partner = element.merchant;
-        value.user = element.utm_source;
-        value.count = element["COUNT(order_id)"];
-        value.sum = element["SUM(reality_commission)"].toLocaleString("it-IT", {
-          style: "currency",
-          currency: "VND",
-        });
-        value.approved = getApproved[0]["COUNT(order_id)"];
-        value.pending = getPending[0]["COUNT(order_id)"];
-        value.rejected = getRejected[0]["COUNT(order_id)"];
-        this.desserts.push(value);
-      });
-      console.log(this.desserts);
     },
+    formatIsoTime(time)
+    {
+      return '00:00:00 || '+ time.toISOString().split('T')[0];
+    }
   },
   computed: {},
   watch: {
-    selectOption: function () {
-      this.resetTime();
+    selectOption: function() {
       switch (this.selectOption) {
         case "Hôm nay": {
+          this.resetTime();
           this.showSelectDate = false;
-          console.log(this.sinceDate.toISOString());
-          console.log(this.untilDate.toISOString());
           this.getOrder();
           break;
         }
         case "Hôm qua": {
+          this.resetTime();
           this.showSelectDate = false;
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
           this.sinceDate.setDate(this.sinceDate.getDate() - 1);
           this.untilDate.setDate(this.untilDate.getDate() - 1);
-          console.log(this.sinceDate.toISOString());
-          console.log(this.untilDate.toISOString());
           this.getOrder();
           break;
         }
         case "Tháng này": {
+          this.resetTime();
           this.showSelectDate = false;
           var date = new Date();
           this.sinceDate = new Date(date.getFullYear(), date.getMonth(), 2);
           this.untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
-          console.log(this.sinceDate.toISOString());
-          console.log(this.untilDate.toISOString());
           this.getOrder();
           break;
         }
         case "Tháng trước": {
+          this.resetTime();
           this.showSelectDate = false;
           var date2 = new Date();
           this.sinceDate = new Date(
@@ -279,19 +241,36 @@ export default {
           this.untilDate = new Date(date2.getFullYear(), date2.getMonth(), 0);
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
-          console.log(this.sinceDate.toISOString());
-          console.log(this.untilDate.toISOString());
           this.getOrder();
           break;
         }
         case "Chọn thời gian": {
-          this.sinceDate = new Date();
-          this.untilDate = new Date();
           this.resetTime();
           this.showSelectDate = true;
           break;
         }
       }
+    },
+    selectUser: function() {
+      this.getOrder();
+    },
+    untilDateShow: function() {
+      this.untilDateShow.setUTCHours(0, 0, 0, 0);
+      this.untilDate = this.untilDateShow;
+    },
+    sinceDateShow: function() {
+      this.sinceDateShow.setUTCHours(0, 0, 0, 0);
+      this.sinceDate = this.sinceDateShow
+    },
+    sinceDate: function() {
+      console.log(this.sinceDate.toISOString());
+      console.log(this.untilDate.toISOString());
+      this.getOrder();
+    },
+    untilDate: function() {
+      console.log(this.sinceDate.toISOString());
+      console.log(this.untilDate.toISOString());
+      this.getOrder();
     },
   },
 };
