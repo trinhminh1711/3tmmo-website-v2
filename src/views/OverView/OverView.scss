@@ -1,51 +1,50 @@
 .revenue {
-    margin-top: 1rem;
-    .revenue-col {
-      padding:  1rem !important;
-      &:hover
+  margin-top: 1rem;
+  .revenue-col {
+    padding: 1rem !important;
+    &:hover {
+      cursor: pointer;
+    }
+    & > div {
+      align-items: center;
+      font-size: 1rem;
+      padding: 2rem;
+      border-radius: 1rem;
+      color: #fff;
+      span
       {
-        cursor: pointer;
+        margin: 0.5rem 0;
+        text-align: center;
+        font-weight: 700;
       }
-      & > div {
-        display: flex;
-        align-items: center;
-        font-size: 1rem;
-        padding: 2rem;
-        border-radius: 1rem;
-        color: #fff;
-        .revenue-data {
-          width: 80%;
-        }
-        p {
-          margin: .5rem 0;
-          &:first-child {
-            font-weight: 700;
-          }
-        }
-  
-        .revenue-icon {
-          width: 20%;
-          img {
-            max-width: 100%;
-          }
+      p {
+        margin: 0.5rem 0;
+        text-align: center;
+        &:first-child {
+          font-weight: 700;
         }
       }
-    }
-    .revenue-year > div {
-      background: linear-gradient(
-          90deg, rgb(191, 10, 73), rgb(212, 60, 43));
-    }
-    .revenue-month > div {
-      background: linear-gradient(
-          90deg, rgb(197, 76, 10), rgb(251, 175, 61));
-    }
-    .revenue-day > div {
-      background: linear-gradient(
-          90deg, rgb(14, 137, 71), rgb(138, 198, 65));
-    }
-    .revenue-total > div {
-      background: linear-gradient(
-  90deg, rgb(11, 56, 144), rgb(40, 120, 218));
+
+      .revenue-icon {
+        width: 25%;
+        margin: 0 auto;
+        img {
+          max-width: 100%;
+        }
+      }
     }
   }
-  
+  .revenue-year > div {
+    background: linear-gradient(90deg, rgb(191, 10, 73), rgb(212, 60, 43));
+  }
+  .revenue-month > div {
+    background: linear-gradient(90deg, rgb(197, 76, 10), rgb(251, 175, 61));
+  }
+  .revenue-day > div {
+    background: linear-gradient(90deg, rgb(14, 137, 71), rgb(138, 198, 65));
+  }
+  .revenue-total > div {
+    background: linear-gradient(90deg, rgb(11, 56, 144), rgb(40, 120, 218));
+  }
+}
+

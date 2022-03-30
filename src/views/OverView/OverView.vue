@@ -57,11 +57,9 @@
         <v-col class="pd-0 revenue-col revenue-year" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p style="white-space: nowrap">Xếp hạng của bạn hôm nay</p>
+              <p style="white-space: nowrap">Xếp hạng hôm nay</p>
               <p class="text-xl">{{ dayRank }}</p>
-              <p class="text-xl">
-                Bạn cần thêm {{ converMoney(commitRankDay) }} để thăng hạng
-              </p>
+              <p class="text-xl">{{ converMoney(commitRankDay) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/military-rank.png" alt="" />
@@ -71,10 +69,12 @@
         <v-col class="pd-0 revenue-col revenue-month" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p style="white-space: nowrap">Thứ hạng của bạn trong tháng</p>
-              <p class="text-xl">{{ monthRank }}</p>
+              <p>
+                <span style="white-space: nowrap">Thứ hạng trong tháng </span>
+                <span class="text-xl">{{ monthRank }}</span>
+              </p>
               <p class="text-xl">
-                Bạn cần thêm {{ converMoney(commitRankMonth) }} để thăng hạng
+                {{ converMoney(commitRankMonth) }}
               </p>
             </div>
 
@@ -86,13 +86,11 @@
         <v-col class="pd-0 revenue-col revenue-day" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p style="white-space: nowrap">Thứ hạng của bạn hôm qua</p>
+              <p style="white-space: nowrap">Thứ hạng hôm qua</p>
               <p class="text-xl" :class="{ top1: topmonth }">
                 {{ lastDayRank }}
               </p>
-              <p class="text-xl">
-                Bạn cần thêm {{ converMoney(commitRankLastDay) }} để thăng hạng
-              </p>
+              <p class="text-xl">{{ converMoney(commitRankLastDay) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/podium.png" alt="" />
@@ -102,11 +100,10 @@
         <v-col class="pd-0 revenue-col revenue-total" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p style="white-space: nowrap">Thứ hạng trong năm</p>
-              <p class="text-xl" :class="{ top1: topyear }">{{ yearRank }}</p>
-              <p class="text-xl">
-                Bạn cần thêm {{ converMoney(commitRankYear) }} để thăng hạng
+              <p style="white-space: nowrap">
+                Thứ hạng trong năm {{ yearRank }}
               </p>
+              <p class="text-xl">{{ converMoney(commitRankYear) }}</p>
             </div>
             <div class="revenue-icon">
               <img src="../../assets/icon/ranking-top-month.png" alt="" />
@@ -119,12 +116,12 @@
       <div id="loader"></div>
     </div>
   </div>
-</template> 
+</template>
 <script>
 import * as convertId from "../../function/converIdUser";
 import * as getOrder from "../../api/statistic/orderByTime";
 import * as sumYearIncome from "../../api/statistic/getSumYear";
-//import * as rank from "../../api/statistic/rankUser";
+import * as rank from "../../api/statistic/rankUser";
 export default {
   data() {
     return {
@@ -150,6 +147,11 @@ export default {
     this.getInComeMonth();
     this.getInComeLastDay();
     this.getInComeYear();
+    this.getRankDataUser();
+    this.getRankDay();
+    this.getRankMonth();
+    this.getRankYesterday();
+    this.getRankYear();
   },
   methods: {
     converMoney(income) {
@@ -157,6 +159,81 @@ export default {
         style: "currency",
         currency: "VND",
       });
+    },
+    async getRankDay() {
+      const since = new Date();
+      since.setUTCHours(0, 0, 0, 0);
+      const until = new Date();
+      until.setUTCHours(23, 59, 59, 99);
+      this.dayRank = await this.getRankDataUser(since, until);
+      this.commitRankDay = await this.checkCommitRank(since, until);
+    },
+    async getRankMonth() {
+      var date = new Date();
+      var sinceDate = new Date(date.getFullYear(), date.getMonth(), 2);
+      var untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+      sinceDate.setUTCHours(0, 0, 0, 0);
+      untilDate.setUTCHours(23, 59, 59);
+      this.monthRank = await this.getRankDataUser(sinceDate, untilDate);
+      this.commitRankMonth = await this.checkCommitRank(sinceDate, untilDate);
+    },
+    async getRankYesterday() {
+      var date = new Date();
+      var sinceDate = new Date(date.setDate(date.getDate() - 1));
+      var untilDate = new Date(date.setDate(date.getDate()));
+      sinceDate.setUTCHours(0, 0, 0, 0);
+      untilDate.setUTCHours(23, 59, 59);
+      this.lastDayRank = await this.getRankDataUser(sinceDate, untilDate);
+      this.commitRankLastDay = await this.checkCommitRank(sinceDate, untilDate);
+    },
+    async getRankYear() {
+      const currentYear = new Date().getFullYear();
+      const firstDay = new Date(currentYear, 0, 2);
+      firstDay.setUTCHours(0, 0, 0, 0);
+      const lastDay = new Date(currentYear, 11, 32);
+      lastDay.setUTCHours(23, 59, 59, 99);
+      console.log(lastDay.toISOString());
+      this.yearRank = await this.getRankDataUser(firstDay, lastDay);
+      this.commitRankYear = await this.checkCommitRank(firstDay, lastDay);
+    },
+    async getRankDataUser(since, until) {
+      const data = await rank.getRankTime(since, until);
+      for (let i = 0; i < data.length; i++) {
+        if (
+          data[i].utm_source ==
+          convertId.convertId(sessionStorage.getItem("IdUser"))
+        ) {
+          return i + 1;
+        }
+      }
+      return "Bạn chưa có đơn hàng";
+    },
+    async checkCommitRank(since, until) {
+      const data = await rank.getRankTime(since, until);
+      for (let i = 0; i < data.length; i++) {
+        if (
+          data[i].utm_source ==
+          convertId.convertId(sessionStorage.getItem("IdUser"))
+        ) {
+          if (i == 0) {
+            return "Bạn đang đứng top 1";
+          } else {
+            if (i == data.length - 1) {
+              return "Bạn cần có đơn hàng";
+            } else {
+              return (
+                "Bạn cần thêm" +
+                this.converMoney(
+                  data[i - 1]["SUM(reality_commission)"] -
+                    data[i]["SUM(reality_commission)"]
+                ) +
+                "để lên hạng"
+              );
+            }
+          }
+        }
+      }
+      return "Chưa có thông tin xếp hạng";
     },
     async getInComeDay() {
       var sinceDate = new Date();
@@ -263,4 +340,3 @@ export default {
   }
 }
 </style>
-

@@ -99,11 +99,9 @@
         </div>
       </div>
     </div>
-    <v-data-table
-      :headers="headers"
-      :items="desserts"
-      class="ml-5 mt-10"
-    ></v-data-table>
+    <v-data-table :headers="headers" :items="desserts" class="ml-5 mt-10">
+    </v-data-table
+    >
   </div>
 </template>
 <script>
@@ -193,10 +191,9 @@ export default {
         this.untilDate.toISOString()
       );
     },
-    formatIsoTime(time)
-    {
-      return '00:00:00 || '+ time.toISOString().split('T')[0];
-    }
+    formatIsoTime(time) {
+      return "00:00:00 || " + time.toISOString().split("T")[0];
+    },
   },
   computed: {},
   watch: {
@@ -223,7 +220,7 @@ export default {
           this.showSelectDate = false;
           var date = new Date();
           this.sinceDate = new Date(date.getFullYear(), date.getMonth(), 2);
-          this.untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+          this.untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
           this.getOrder();
@@ -260,7 +257,7 @@ export default {
     },
     sinceDateShow: function() {
       this.sinceDateShow.setUTCHours(0, 0, 0, 0);
-      this.sinceDate = this.sinceDateShow
+      this.sinceDate = this.sinceDateShow;
     },
     sinceDate: function() {
       console.log(this.sinceDate.toISOString());

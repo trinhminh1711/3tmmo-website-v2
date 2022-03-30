@@ -8,7 +8,7 @@ import { VueEditor } from "vue2-editor";
 import VCalendar from "v-calendar";
 import axios from "axios";
 axios.defaults.headers.common["Authorization"] =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0ODQ4MjU0MywiZXhwIjoxNjQ4NDg2MTQzfQ.WOQIzNx6FIc60kjlMMfCURFmFvc2PM7iCDJBjH7zwSg";
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoidmlldHRoYW5ndnFocCIsImlhdCI6MTY0ODU2ODI5OSwiZXhwIjoxNjQ4NTcxODk5fQ.JtXcC-eEtCPJMQ8cbO0zK53W7wGklUjJixDxbYdxP1I";
 Vue.config.productionTip = false;
 Vue.use(excel);
 Vue.use(VCalendar, {
