@@ -8,6 +8,14 @@ export async function getOrderUser(id, since, until) {
   return res.data;
 }
 
+export async function getOrderMerchant(id, since, until , merchant) {
+  const res = await axios.get(urls.Order.getOrderMerchant, {
+    params: { idUser: id, since: since, until: until  , merchant : merchant },
+  });
+
+  return res.data;
+}
+
 export async function getOrderGroupUser(id, since, until) {
   const res = await axios.get(urls.Order.getOrderGroup, {
     params: { idUser: id, since: since, until: until },
@@ -51,14 +59,14 @@ export async function getStatusGroup(orderGroup, since, until, user_id) {
   var orderFull = {};
   orderFull.merchant = orderGroup.merchant;
   orderFull.utm_source = orderGroup.utm_source;
-  if (orderFull.sum != null) {
+  if (resApproved.data[0] != null) {
     orderFull.sum = resApproved.data[0][
       "SUM(reality_commission)"
     ].toLocaleString("it-IT", { style: "currency", currency: "VND" });
-  }
-  else
-  {
+    orderFull.sumNumber = resApproved.data[0]["SUM(reality_commission)"];
+  } else {
     orderFull.sum = 0;
+    orderFull.sumNumber = 0;
   }
   orderFull.countTotal = orderGroup["COUNT(order_id)"];
   orderFull.pending = resPending.data[0]["COUNT(order_id)"];

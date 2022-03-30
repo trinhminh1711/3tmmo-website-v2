@@ -99,9 +99,61 @@
         </div>
       </div>
     </div>
-    <v-data-table :headers="headers" :items="desserts" class="ml-5 mt-10">
-    </v-data-table
-    >
+    <h3 class="ml-3 mt-10 ml-5" v-if="showTitle">
+      Tổng hoa hồng tạm duyệt : {{ sumAllOrder }}
+    </h3>
+    <v-simple-table class="ml-5 mt-5">
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th
+              v-for="(label, index) in headers"
+              :key="index"
+              class="text-left"
+            >
+              {{ label.text }}
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, idx) in desserts" :key="idx">
+            <td class="ml-4" v-for="(label, index) in headers" :key="index">
+              {{ item[label.key] }}
+            </td>
+            <td>
+              <v-btn @click="viewDetailOrder(item)" depressed small>
+                <v-icon>mdi-television</v-icon>
+              </v-btn>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot align="center">
+          <tr>
+            <td v-if="showTitle" colspan="4">
+              Tổng hoa hổng : {{ sumAllOrder }}
+            </td>
+            <td v-if="showTitle" colspan="5">
+              Tỷ lệ hủy : {{ persentReject }}
+            </td>
+          </tr>
+        </tfoot>
+      </template>
+    </v-simple-table>
+    <v-dialog v-model="viewDetail" width="90%">
+      <v-card-title class="text-h5 grey lighten-2">
+        Thông tin chi tiêt
+      </v-card-title>
+      <v-data-table
+        :headers="headersViewDetail"
+        :items="itemViewDetail"
+        :items-per-page="10"
+        class="elevation-1"
+      ></v-data-table>
+      <v-card-title class="text-h5 grey lighten-2">
+        Tổng hoa hồng tạm duyệt : {{ sumIncomeDetail }}
+      </v-card-title>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -115,25 +167,61 @@ export default {
       headers: [
         {
           text: "Đối tác",
-          align: "start",
-          sortable: false,
-          value: "merchant",
+          key: "merchant",
         },
-
-        { text: "Mã user", value: "utm_source" },
-        { text: "Tổng số đơn", value: "countTotal" },
-        { text: "Hoa hồng (Tạm duyệt )", value: "sum" },
-        { text: "Tạm duyệt", value: "approved" },
-        { text: "Chờ xử lý", value: "pending" },
-        { text: "Bị hủy", value: "rejected" },
+        {
+          text: "Mã user",
+          key: "utm_source",
+        },
+        {
+          text: "Tổng số đơn",
+          key: "countTotal",
+        },
+        {
+          text: "Hoa hồng ( Tạm Duyệt )",
+          key: "merchant",
+        },
+        {
+          text: "Tạm duyệt",
+          key: "approved",
+        },
+        {
+          text: "Chờ xử lý",
+          key: "pending",
+        },
+        {
+          text: "Bị hủy",
+          key: "rejected",
+        },
+        {
+          text: "Tổng hoa hồng ( Tạm Duyệt )",
+          key: "sum",
+        },
       ],
+      headersViewDetail: [
+        { text: "Mã đơn hàng", value: "order_id" },
+        { text: "Đối tác", value: "merchant" },
+        { text: "Trạng thái duyệt", value: "is_confirmed", sortable: false },
+        { text: "Trạng thái đơn hàng", value: "order_status", sortable: false },
+        { text: "Hoa hồng", value: "reality_commission" },
+        { text: "Thời gian click", value: "click_time" },
+        { text: "Thời gian mua", value: "sales_time" },
+        { text: "Thời gian xác nhận", value: "confirmed_time" },
+        { text: "Thiết bị", value: "device" },
+      ],
+      itemViewDetail: [],
+      sumIncomeDetail: 0,
       desserts: [],
       selectUntil: false,
       selectSince: false,
       selectUntilDate: new Date(),
       selectSinceDate: new Date(),
       showSelectDate: false,
+      sumAllOrder: 0,
+      showTitle: false,
+      persentReject: 0,
       selectOption: "",
+      viewDetail: false,
       itemsTime: [
         "Hôm nay",
         "Hôm qua",
@@ -183,16 +271,91 @@ export default {
       this.sinceDate.setUTCHours(0, 0, 0, 0);
       this.untilDate.setUTCHours(23, 59, 59);
     },
-
+    viewDetailOrder: async function(item) {
+      this.sumIncomeDetail = item.sum;
+      var dataMerchant = await order.getOrderMerchant(
+        this.selectUser,
+        this.sinceDate.toISOString(),
+        this.untilDate.toISOString(),
+        item.merchant
+      );
+      this.viewDetail = true;
+      var empty = [];
+      dataMerchant.forEach((element) => {
+        var obj = {};
+        obj.order_id = element.order_id;
+        obj.merchant = element.merchant;
+        obj.is_confirmed = this.convertConfirmStatus(element.is_confirmed);
+        obj.order_status = this.convertStatus(element.order_status);
+        obj.reality_commission = element.reality_commission.toLocaleString(
+          "it-IT",
+          {
+            style: "currency",
+            currency: "VND",
+          }
+        );
+        obj.click_time = this.formatUTCTime(element.click_time);
+        obj.sales_time = this.formatUTCTime(element.sales_time);
+        obj.confirmed_time = this.formatUTCTime(element.confirmed_time);
+        obj.device = element.device;
+        empty.push(obj);
+      });
+      this.itemViewDetail = empty;
+    },
+    convertConfirmStatus(status) {
+      if (status == 0) {
+        return "Chưa duyệt";
+      } else if (status == 1) {
+        return "Đã duyệt";
+      }
+    },
+    convertStatus(status) {
+      if (status == 0) {
+        return "Đang xử lý";
+      } else if (status == 1) {
+        return "Tạm duyệt";
+      }
+      return "Đã hủy"
+    },
     getOrder: async function() {
       this.desserts = await order.getOrderGroupUser(
         this.selectUser,
         this.sinceDate.toISOString(),
         this.untilDate.toISOString()
       );
+      await this.getSumOrder(this.desserts);
+    },
+    getSumOrder: function(arrData) {
+      var sumTotal = 0;
+      var reject = 0;
+      var approved = 0;
+      arrData.forEach((element) => {
+        sumTotal = sumTotal + element.sumNumber;
+        reject = reject + element.rejected;
+        approved = approved + element.approved;
+      });
+      if (sumTotal != 0) {
+        this.showTitle = true;
+      }
+      this.sumAllOrder = sumTotal.toLocaleString("it-IT", {
+        style: "currency",
+        currency: "VND",
+      });
+      this.persentReject = ((reject / approved) * 100).toFixed(2) + "%";
     },
     formatIsoTime(time) {
       return "00:00:00 || " + time.toISOString().split("T")[0];
+    },
+    formatUTCTime(time) {
+      return (
+        time.split("T")[1].split(":")[0] +
+        ":" +
+        time.split("T")[1].split(":")[1] +
+        ":" +
+        time.split("T")[1].split(":")[2] +
+        " " +
+        time.split("T")[0]
+      );
     },
   },
   computed: {},
@@ -260,13 +423,9 @@ export default {
       this.sinceDate = this.sinceDateShow;
     },
     sinceDate: function() {
-      console.log(this.sinceDate.toISOString());
-      console.log(this.untilDate.toISOString());
       this.getOrder();
     },
     untilDate: function() {
-      console.log(this.sinceDate.toISOString());
-      console.log(this.untilDate.toISOString());
       this.getOrder();
     },
   },
