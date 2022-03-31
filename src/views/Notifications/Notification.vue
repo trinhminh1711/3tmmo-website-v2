@@ -46,13 +46,13 @@
         </v-card>
       </v-dialog>
     </div>
-    <v-dialog v-model="popupAddNotify" width="800">
+    <v-dialog v-model="popupAddNotify" width="1200">
       <v-card>
         <AddNotify />
         <v-divider></v-divider>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="viewDetail" width="1000">
+    <v-dialog v-model="viewDetail" width="1200">
       <v-card>
         <DetailNotify :content="contentDetailNotify" />
         <v-divider></v-divider>

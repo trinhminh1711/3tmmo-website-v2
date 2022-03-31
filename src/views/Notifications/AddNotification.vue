@@ -6,7 +6,7 @@
       class="ma-2 white--text"
       @click="addNotify"
     >
-      Upload
+      Đăng
       <v-icon right dark> mdi-cloud-upload </v-icon>
     </v-btn>
   </div>
@@ -31,7 +31,8 @@ export default {
       const date = new Date();
       const dateString = date.toLocaleDateString();
       await notification.addNotification(this.content, dateString);
-      this.loader = "loading";
+      alert("Update thành công");
+      location.reload();
     },
   },
   watch: {},
