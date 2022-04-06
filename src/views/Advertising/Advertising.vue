@@ -23,7 +23,7 @@
             >
           </v-tooltip>
         </v-col>
-        <v-col cols="5" class="pa-0 d-flex align-center ml-5">
+        <v-col cols="5" class="pa-0 d-flex justify-end align-center ml-5">
           <a target="_blank" :href="link_ads" id="link-Ads" class="mx-5">{{
             link_ads
           }}</a>

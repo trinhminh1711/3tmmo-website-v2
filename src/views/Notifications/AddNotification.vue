@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <vue-editor v-model="content"></vue-editor>
-    <v-btn
-      color="blue-grey"
-      class="ma-2 white--text"
-      @click="addNotify"
-    >
-      Đăng
-      <v-icon right dark> mdi-cloud-upload </v-icon>
-    </v-btn>
+  <div style="height:100%" class="d-flex flex-column justify-space-between">
+    <div style="height:80%">
+      <vue-editor style="height:100%" v-model="content"></vue-editor>
+    </div>
+    <div>
+      <v-btn color="blue-grey" class="ma-2 white--text" @click="addNotify">
+        Đăng
+        <v-icon right dark> mdi-cloud-upload </v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 

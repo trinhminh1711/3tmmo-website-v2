@@ -2,8 +2,8 @@
   <div class="height-full notification-wrapper">
     <div class="d-flex align-center justify-space-between pa-5">
       <h2 class="title-wrapper">Danh sách thông báo</h2>
-      <v-btn @click="addNotify()" color="primary">
-        <v-icon class="mr-4">mdi-plus-box-multiple</v-icon>
+      <v-btn v-if="showAdmin" @click="addNotify()" color="primary">
+        <v-icon  class="mr-4">mdi-plus-box-multiple</v-icon>
         Thêm mới
       </v-btn>
     </div>
@@ -15,19 +15,26 @@
         tile
       >
         <v-list-item>
-          <v-list-item-content
-            style="cursor: pointer"
-          >
+          <v-list-item-content style="cursor: pointer">
             <div class="d-flex">
-              <v-list-item-title  @click="viewDetailNotify(item.content)" class="title d-flex align-center">
+              <v-list-item-title
+                @click="viewDetailNotify(item.content)"
+                class="title d-flex align-center"
+              >
                 <p class="date">
                   <v-icon class="mr-3">mdi-update</v-icon> Ngày thêm :
                   {{ item.extra_date }}
                 </p>
               </v-list-item-title>
-              <v-icon class="delete_notify" @click="deleteNoti(item)">mdi-delete</v-icon>
+              <v-icon v-if="showAdmin" class="delete_notify" @click="deleteNoti(item)"
+                >mdi-delete</v-icon
+              >
             </div>
-            <p @click="viewDetailNotify(item.content)"  v-html="item.content" class="content"></p>
+            <p
+              @click="viewDetailNotify(item.content)"
+              v-html="item.content"
+              class="content"
+            ></p>
           </v-list-item-content>
         </v-list-item>
       </v-card>
@@ -46,8 +53,8 @@
         </v-card>
       </v-dialog>
     </div>
-    <v-dialog v-model="popupAddNotify" width="1200">
-      <v-card>
+    <v-dialog v-model="popupAddNotify" width="90%">
+      <v-card height="70vh" width="100%">
         <AddNotify />
         <v-divider></v-divider>
       </v-card>
@@ -64,6 +71,7 @@
 <script>
 import * as notification from "../../api/notification/notification";
 import AddNotify from "../Notifications/AddNotification";
+import * as permission from "../../permission/checkPermission";
 import DetailNotify from "../Notifications/DetailNotification.vue";
 export default {
   components: { AddNotify, DetailNotify },
@@ -72,12 +80,21 @@ export default {
       notify: [],
       deleteNotify: "",
       popupDelete: false,
+      showAdmin : false,
       popupAddNotify: false,
       viewDetail: false,
       contentDetailNotify: "",
     };
   },
   async mounted() {
+    const permision = await permission.checkPermission();
+    if (permision == 0) {
+      this.getPermission = "admin";
+      this.showAdmin = true;
+    } else {
+      this.getPermission = "user";
+      this.showAdmin = false;
+    }
     const arrNotify = await notification.getNotification();
     arrNotify.forEach((element) => {
       var dataNotify = {};

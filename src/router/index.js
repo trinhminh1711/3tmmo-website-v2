@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home'
 import OverView from '../views/OverView/OverView'
+import Account from '../views/Account/Account.vue'
 import About from '../views/About/About'
 import ListUser from '../views/Admin/ListUser'
 import Login from '../views/Login/Login'
@@ -27,6 +28,12 @@ const routes = [
 
         path: 'overview',
         component: OverView
+      },
+      {
+
+        path: 'Account',
+        component: Account,
+        name : 'account'
       },
       {
         path: 'about',

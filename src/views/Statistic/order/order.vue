@@ -130,11 +130,8 @@
         </tbody>
         <tfoot align="center">
           <tr>
-            <td v-if="showTitle" colspan="4">
+            <td v-if="showTitle" colspan="8">
               Tổng hoa hổng : {{ sumAllOrder }}
-            </td>
-            <td v-if="showTitle" colspan="5">
-              Tỷ lệ hủy : {{ persentReject }}
             </td>
           </tr>
         </tfoot>
@@ -174,10 +171,6 @@ export default {
           key: "utm_source",
         },
         {
-          text: "Tổng số đơn",
-          key: "countTotal",
-        },
-        {
           text: "Hoa hồng ( Tạm Duyệt )",
           key: "merchant",
         },
@@ -199,7 +192,6 @@ export default {
         },
       ],
       headersViewDetail: [
-        { text: "Mã đơn hàng", value: "order_id" },
         { text: "Đối tác", value: "merchant" },
         { text: "Trạng thái duyệt", value: "is_confirmed", sortable: false },
         { text: "Trạng thái đơn hàng", value: "order_status", sortable: false },

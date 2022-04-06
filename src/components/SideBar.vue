@@ -17,7 +17,12 @@
             Tổng quan
           </router-link>
         </li>
-
+        <li v-if="showAdmin" class="item">
+          <router-link :to="{ name: 'account' }">
+            <v-icon color="white">mdi-account-key</v-icon>
+            Quản lý Account
+          </router-link>
+        </li>
         <li class="item">
           <router-link to="/partner">
             <i class="far fa-handshake"></i>
@@ -43,13 +48,13 @@
           </router-link>
         </li>
         <li class="item">
-          <router-link :to="{name : 'order'}">
+          <router-link :to="{ name: 'order' }">
             <i class="fas fa-indent"></i>
             Thống kê
           </router-link>
         </li>
-        <li v-if="showAdmin" class="item">
-          <router-link :to="{name : 'notification'}">
+        <li class="item">
+          <router-link :to="{ name: 'notification' }">
             <i class="fas fa-bullhorn"></i>
             Hệ thống thông báo
           </router-link>
@@ -100,7 +105,7 @@ export default {
     }
   },
   methods: {
-    getNow: function () {
+    getNow: function() {
       const today = new Date();
       const date =
         today.getFullYear() +
@@ -113,7 +118,7 @@ export default {
       const dateTime = date + " " + time;
       this.timestamp = dateTime;
     },
-    logout: function () {
+    logout: function() {
       sessionStorage.clear();
       this.$router.push({ path: "/login" });
     },

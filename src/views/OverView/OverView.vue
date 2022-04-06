@@ -69,10 +69,8 @@
         <v-col class="pd-0 revenue-col revenue-month" cols="4" sm="6" md="3">
           <div class="rounded-lg pa-4">
             <div class="revenue-data">
-              <p>
-                <span style="white-space: nowrap">Thứ hạng trong tháng </span>
-                <span class="text-xl">{{ monthRank }}</span>
-              </p>
+              <p style="white-space: nowrap">Thứ hạng trong tháng</p>
+              <p class="text-xl">{{ monthRank }}</p>
               <p class="text-xl">
                 {{ converMoney(commitRankMonth) }}
               </p>
@@ -222,12 +220,12 @@ export default {
               return "Bạn cần có đơn hàng";
             } else {
               return (
-                "Bạn cần thêm" +
+                "Bạn cần thêm " +
                 this.converMoney(
                   data[i - 1]["SUM(reality_commission)"] -
                     data[i]["SUM(reality_commission)"]
                 ) +
-                "để lên hạng"
+                " để lên hạng"
               );
             }
           }
