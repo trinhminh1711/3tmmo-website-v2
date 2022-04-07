@@ -62,7 +62,7 @@ export async function getStatusGroup(orderGroup, since, until, user_id) {
   if (resApproved.data[0] != null) {
     orderFull.sum = resApproved.data[0][
       "SUM(reality_commission)"
-    ].toLocaleString("it-IT", { style: "currency", currency: "VND" });
+    ]
     orderFull.sumNumber = resApproved.data[0]["SUM(reality_commission)"];
   } else {
     orderFull.sum = 0;
