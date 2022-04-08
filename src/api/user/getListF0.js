@@ -47,12 +47,7 @@ async function getIncomeYear(user, since) {
     userFull.reality_commission = incomeYear.data[0][
       "SUM(reality_commission)"
     ].toLocaleString();
-    userFull.sharing =
-      (
-        (incomeYear.data[0]["SUM(reality_commission)"] /
-          incomeYear.data[0]["SUM(pub_commission)"]) *
-        100
-      ).toFixed() + "%";
+    userFull.sharing = ((incomeYear.data[0]["SUM(reality_commission)"] * 10) / 100).toLocaleString(undefined, {maximumFractionDigits: 0});
   }
   return userFull;
 }

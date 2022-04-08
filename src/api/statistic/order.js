@@ -59,11 +59,11 @@ export async function getStatusGroup(orderGroup, since, until, user_id) {
   var orderFull = {};
   orderFull.merchant = orderGroup.merchant;
   orderFull.utm_source = orderGroup.utm_source;
-  if (resApproved.data[0] != null) {
-    orderFull.sum = resApproved.data[0][
+  if (resApproved.data[0]["SUM(reality_commission)"] != null ) {
+    orderFull.sum = (resApproved.data[0][
       "SUM(reality_commission)"
-    ]
-    orderFull.sumNumber = resApproved.data[0]["SUM(reality_commission)"];
+    ]).toLocaleString(undefined, {maximumFractionDigits: 0});
+    orderFull.sumNumber = (resApproved.data[0]["SUM(reality_commission)"]);
   } else {
     orderFull.sum = 0;
     orderFull.sumNumber = 0;

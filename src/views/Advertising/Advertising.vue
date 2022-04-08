@@ -120,7 +120,7 @@ export default {
         this.idUser,
         saleTime
       )),
-        (this.loading = false);
+      this.loading = false;
     },
     async getRankUser() {
       this.loading = true;

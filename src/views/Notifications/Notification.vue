@@ -26,7 +26,7 @@
                   {{ item.extra_date }}
                 </p>
               </v-list-item-title>
-              <v-icon v-if="showAdmin" class="delete_notify" @click="deleteNoti(item)"
+              <v-icon v-if="showAdmin" class="delete_notify" @click="deleteNoti(item.id)"
                 >mdi-delete</v-icon
               >
             </div>
@@ -96,21 +96,25 @@ export default {
       this.showAdmin = false;
     }
     const arrNotify = await notification.getNotification();
+    const emptyArrNotify = [];
     arrNotify.forEach((element) => {
       var dataNotify = {};
+      dataNotify.id = element.id;
       dataNotify.extra_date = element.extra_date.replaceAll("'", "");
       dataNotify.content = element.content.replaceAll("'", "");
-      this.notify.push(dataNotify);
+     emptyArrNotify.push(dataNotify);
     });
+    this.notify =  emptyArrNotify.reverse();
   },
   methods: {
     deleteNoti(itemNotify) {
       this.deleteNotify = itemNotify;
+      console.log(this.deleteNotify);
       this.popupDelete = true;
     },
     async requestDelete() {
       this.popupDelete = false;
-      await notification.deleteNotification(this.deleteNotify.id);
+      await notification.deleteNotification(this.deleteNotify);
       location.reload();
     },
     viewDetailNotify(value) {

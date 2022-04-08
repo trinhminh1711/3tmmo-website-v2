@@ -39,7 +39,8 @@
       clearable
     ></v-text-field>
     <v-alert border="bottom" colored-border type="warning" elevation="2">
-      Lưu ý : Tỷ lệ hoa hồng khi chỉnh sửa sẽ chỉ được áp dụng cho các đơn hàng <strong style="color:red">từ thời điểm chỉnh sửa</strong>
+      Lưu ý : Tỷ lệ hoa hồng khi chỉnh sửa sẽ chỉ được áp dụng cho các đơn hàng <strong style="color:red">từ 00h00 của ngày chỉnh sửa.</strong>
+      Mặc định 40%
     </v-alert>
     <v-btn class="mt-2" @click="updatePartner()" color="success">
       <v-icon> mdi-file-check</v-icon> Lưu thay đổi</v-btn

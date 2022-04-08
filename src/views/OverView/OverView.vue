@@ -153,10 +153,7 @@ export default {
   },
   methods: {
     converMoney(income) {
-      return income.toLocaleString("it-IT", {
-        style: "currency",
-        currency: "VND",
-      });
+      return income.toLocaleString(undefined, {maximumFractionDigits: 0});
     },
     async getRankDay() {
       const since = new Date();

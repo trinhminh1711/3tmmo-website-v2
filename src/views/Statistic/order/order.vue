@@ -279,13 +279,7 @@ export default {
         obj.merchant = element.merchant;
         obj.is_confirmed = this.convertConfirmStatus(element.is_confirmed);
         obj.order_status = this.convertStatus(element.order_status);
-        obj.reality_commission = element.reality_commission.toLocaleString(
-          "it-IT",
-          {
-            style: "currency",
-            currency: "VND",
-          }
-        );
+        obj.reality_commission = element.reality_commission.toLocaleString(undefined, {maximumFractionDigits: 0});
         obj.click_time = this.formatUTCTime(element.click_time);
         obj.sales_time = this.formatUTCTime(element.sales_time);
         obj.confirmed_time = this.formatUTCTime(element.confirmed_time);
@@ -329,10 +323,7 @@ export default {
       if (sumTotal != 0) {
         this.showTitle = true;
       }
-      this.sumAllOrder = sumTotal.toLocaleString("it-IT", {
-        style: "currency",
-        currency: "VND",
-      });
+      this.sumAllOrder = sumTotal.toLocaleString(undefined, {maximumFractionDigits: 0});
       this.persentReject = ((reject / approved) * 100).toFixed(2) + "%";
     },
     formatIsoTime(time) {

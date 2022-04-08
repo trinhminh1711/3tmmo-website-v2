@@ -27,7 +27,7 @@
             <td style="max-width: 700px; padding: 1rem; overflow: hidden">
               {{ partner.redirect_link }}
             </td>
-            <td>{{ partner.unit_price }}</td>
+            <td>{{ partner.unit_price.toLocaleString(undefined, {maximumFractionDigits: 0}) }}</td>
             <td>{{ partner.sign }}</td>
             <td
               v-if="showAdmin"
@@ -42,7 +42,7 @@
     </v-simple-table>
     <div class="d-flex save-comission"></div>
     <div class="text-center">
-      <v-dialog v-model="dialog" width="1000">
+      <v-dialog v-model="dialog" width="1100">
         <v-card>
           <v-card-title class="text-h5 grey lighten-2">
             Sửa thông tin đối tác

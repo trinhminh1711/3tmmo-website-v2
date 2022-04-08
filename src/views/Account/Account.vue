@@ -29,8 +29,8 @@
               <p class="my-0" v-if="index != 'ID'">{{ info }}</p>
             </td>
             <td class="d-flex align-center justify-end">
-              <v-btn style="font-size:10px" depressed color="primary mr-5">
-                Chỉnh sửa
+              <v-btn @click="deleteAction(item.ID)" style="font-size:10px" depressed color="error mr-5">
+                Xóa tài khoản
               </v-btn>
             </td>
           </tr>
@@ -124,6 +124,7 @@ export default {
       loader: null,
       loading: false,
       showErrorValidate: false,
+      showErrorResponse: false,
       API_key: "",
       username: "",
     };
