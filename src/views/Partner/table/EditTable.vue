@@ -103,7 +103,8 @@ export default {
   },
   methods: {
     async updatePartner() {
-      console.log(this.partnerEdit);
+      this.loading = true;
+      setTimeout(() =>  { alert("Update successful");  this.loading = false ; location.reload();}, 2000);
       await partner.updatePartner(
         this.partnerEdit.name,
         this.partnerEdit.link,
@@ -111,26 +112,15 @@ export default {
         this.partnerEdit.sign,
         parseInt(this.partnerEdit.percentage)
       );
-      alert("update thành công");
-      location.reload();
     },
     deletePartner() {
       this.confirmDelete = !this.confirmDelete;
     },
     async acceptDelete() {
       this.loading = true;
-      const deleteRes = await partner.deletePartner(this.partnerEdit.name);
-      this.loading = false;
       this.confirmDelete = false;
-      if (deleteRes) {
-        this.alertSuccess = true;
-        this.errorSuccess = false;
-        location.reload();
-      } else {
-        this.alertSuccess = false;
-        this.errorSuccess = true;
-        location.reload();
-      }
+      setTimeout(() =>  { alert("Đã xóa đối tác");  this.loading = false ; location.reload();}, 2000);
+      await partner.deletePartner(this.partnerEdit.name);
     },
   },
 };

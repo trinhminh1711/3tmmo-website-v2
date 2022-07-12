@@ -141,16 +141,36 @@
       <v-card-title class="text-h5 grey lighten-2">
         Thông tin chi tiêt
       </v-card-title>
-      <v-data-table
+       <v-data-table
         :headers="headersViewDetail"
         :items="itemViewDetail"
         :items-per-page="10"
         class="elevation-1"
-      ></v-data-table>
+      >
+      <template v-slot:item.is_confirmed="{ item }">
+      <v-chip
+        :color="getColor(item.is_confirmed)"
+        dark
+      >
+        {{ item.is_confirmed }}
+      </v-chip>
+    </template>
+    <template v-slot:item.order_status="{ item }">
+      <v-chip
+        :color="getColorStatus(item.order_status)"
+        dark
+      >
+        {{ item.order_status }}
+      </v-chip>
+    </template>
+      </v-data-table>
       <v-card-title class="text-h5 grey lighten-2">
         Tổng hoa hồng tạm duyệt : {{ sumIncomeDetail }}
       </v-card-title>
     </v-dialog>
+    <div v-if="loading" id="loader-wrapper">
+      <div id="loader"></div>
+    </div>
   </div>
 </template>
 <script>
@@ -171,10 +191,6 @@ export default {
           key: "utm_source",
         },
         {
-          text: "Hoa hồng ( Tạm Duyệt )",
-          key: "merchant",
-        },
-        {
           text: "Tạm duyệt",
           key: "approved",
         },
@@ -193,16 +209,16 @@ export default {
       ],
       headersViewDetail: [
         { text: "Đối tác", value: "merchant" },
-        { text: "Trạng thái duyệt", value: "is_confirmed", sortable: false },
+        { text: "Thời gian mua", value: "sales_time" },
+        { text: "Trạng thái đối soát", value: "is_confirmed", sortable: false },
         { text: "Trạng thái đơn hàng", value: "order_status", sortable: false },
         { text: "Hoa hồng", value: "reality_commission" },
         { text: "Thời gian click", value: "click_time" },
-        { text: "Thời gian mua", value: "sales_time" },
         { text: "Thời gian xác nhận", value: "confirmed_time" },
-        { text: "Thiết bị", value: "device" },
       ],
       itemViewDetail: [],
       sumIncomeDetail: 0,
+      loading : false,
       desserts: [],
       selectUntil: false,
       selectSince: false,
@@ -257,6 +273,16 @@ export default {
     }
   },
   methods: {
+    getColor(is_confirmed) {
+      if (is_confirmed == "Chưa đối soát") return "purple";
+      else return "green";
+    },
+    getColorStatus(order_status)
+    {
+      if (order_status == "Đã hủy") return "red";
+      else if(order_status == "Đang xử lý") return "orange";
+      else return "light-green"
+    },
     resetTime() {
       this.sinceDate = new Date();
       this.untilDate = new Date();
@@ -283,14 +309,13 @@ export default {
         obj.click_time = this.formatUTCTime(element.click_time);
         obj.sales_time = this.formatUTCTime(element.sales_time);
         obj.confirmed_time = this.formatUTCTime(element.confirmed_time);
-        obj.device = element.device;
         empty.push(obj);
       });
       this.itemViewDetail = empty;
     },
     convertConfirmStatus(status) {
       if (status == 0) {
-        return "Chưa duyệt";
+        return "Chưa đối soát";
       } else if (status == 1) {
         return "Đã duyệt";
       }
@@ -304,12 +329,16 @@ export default {
       return "Đã hủy"
     },
     getOrder: async function() {
+      this.loading = true;
+      console.log(this.sinceDate.toISOString());
+      console.log(this.untilDate.toISOString());
       this.desserts = await order.getOrderGroupUser(
         this.selectUser,
         this.sinceDate.toISOString(),
         this.untilDate.toISOString()
       );
       await this.getSumOrder(this.desserts);
+      this.loading = false;
     },
     getSumOrder: function(arrData) {
       var sumTotal = 0;
@@ -395,7 +424,7 @@ export default {
       }
     },
     selectUser: function() {
-      this.getOrder();
+     this.getOrder();
     },
     untilDateShow: function() {
       this.untilDateShow.setUTCHours(0, 0, 0, 0);
@@ -421,7 +450,8 @@ export default {
 }
 .time-picker {
   top: 100%;
-  left: 10px;
+  left: 15px;
+  width: 95%;
 }
 .absolute {
   position: absolute;

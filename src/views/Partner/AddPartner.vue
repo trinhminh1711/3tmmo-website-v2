@@ -84,36 +84,14 @@ export default {
     async addPartner() {
       if (this.checkForm()) {
         this.loading = true;
-        const createPartner = await partner.addPartner(
+        setTimeout(() =>  { alert("Thêm thành công");  this.loading = false ; location.reload();}, 2000);
+        await partner.addPartner(
           this.namePartner,
           this.linkPartner,
           this.unitPricePartner,
           this.signPartner,
           this.percentagePartner
         );
-        console.log(createPartner);
-        this.loading = false;
-        if (createPartner.data.add) {
-          this.alertSuccess = true;
-          this.errorSuccess = false;
-          setTimeout(
-            function () {
-              this.alertSuccess = false;
-              location.reload();
-            }.bind(this),
-            1500
-          );
-        } else {
-          this.errorSuccess = true;
-          this.alertSuccess = false;
-          setTimeout(
-            function () {
-              this.errorSuccess = false;
-              location.reload();
-            }.bind(this),
-            1500
-          );
-        }
       }
     },
     checkForm() {
