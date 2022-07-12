@@ -16,6 +16,19 @@ export async function getOrderMerchant(id, since, until , merchant) {
   return res.data;
 }
 
+export async function getOrderAllUserSucess(since, until) {
+  const res = await axios.get(urls.Order.getOrderAllGroupSuccess, {
+    params: { since: since, until: until },
+  });
+  return res.data;
+  // const promises = [];
+  // res.data.map(async (orderGroup) => {
+  //   const value = getStatusGroup(orderGroup, since, until, id);
+  //   promises.push(value);
+  // });
+  // return Promise.all(promises);
+}
+
 export async function getOrderGroupUser(id, since, until) {
   const res = await axios.get(urls.Order.getOrderGroup, {
     params: { idUser: id, since: since, until: until },

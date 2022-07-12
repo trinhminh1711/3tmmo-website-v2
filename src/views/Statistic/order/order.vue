@@ -122,7 +122,7 @@
               {{ item[label.key] }}
             </td>
             <td>
-              <v-btn @click="viewDetailOrder(item)" depressed small>
+              <v-btn v-if="selectUser != 'Xem toàn bộ'" @click="viewDetailOrder(item)" depressed small>
                 <v-icon>mdi-television</v-icon>
               </v-btn>
             </td>
@@ -215,6 +215,7 @@ export default {
         { text: "Hoa hồng", value: "reality_commission" },
         { text: "Thời gian click", value: "click_time" },
         { text: "Thời gian xác nhận", value: "confirmed_time" },
+        { text: "User agent", value: "user_agent", width: "500px"},
       ],
       itemViewDetail: [],
       sumIncomeDetail: 0,
@@ -245,7 +246,7 @@ export default {
         timeZone: "UTC",
       },
       selectUser: convertId.convertId(sessionStorage.getItem("IdUser")),
-      itemsUser: [],
+      itemsUser: ["Xem toàn bộ"],
       timezone: "",
     };
   },
@@ -309,6 +310,7 @@ export default {
         obj.click_time = this.formatUTCTime(element.click_time);
         obj.sales_time = this.formatUTCTime(element.sales_time);
         obj.confirmed_time = this.formatUTCTime(element.confirmed_time);
+        obj.user_agent = element.user_agent
         empty.push(obj);
       });
       this.itemViewDetail = empty;
@@ -330,14 +332,22 @@ export default {
     },
     getOrder: async function() {
       this.loading = true;
-      console.log(this.sinceDate.toISOString());
-      console.log(this.untilDate.toISOString());
       this.desserts = await order.getOrderGroupUser(
         this.selectUser,
         this.sinceDate.toISOString(),
         this.untilDate.toISOString()
       );
       await this.getSumOrder(this.desserts);
+      this.loading = false;
+    },
+    getAllOrder: async function() {
+      this.loading = true;
+      this.headers =  [{text: "Đối tác",key: "merchant"},{text: "Tạm duyệt",key: ['COUNT(order_id)']},{text: "Tổng hoa hồng (tạm duyệt)",key: ['SUM(reality_commission)']}],
+      this.desserts = await order.getOrderAllUserSucess(
+        this.sinceDate.toISOString(),
+        this.untilDate.toISOString()
+      );
+      console.log(this.desserts);
       this.loading = false;
     },
     getSumOrder: function(arrData) {
@@ -424,7 +434,14 @@ export default {
       }
     },
     selectUser: function() {
-     this.getOrder();
+     if(this.selectUser == "Xem toàn bộ")
+     {
+     this.getAllOrder()
+     }
+     else
+     {
+      this.getOrder();
+     }
     },
     untilDateShow: function() {
       this.untilDateShow.setUTCHours(0, 0, 0, 0);
