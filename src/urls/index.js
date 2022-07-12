@@ -40,6 +40,7 @@ const urls = {
     getOrderGroup: "http://localhost:3000/order/group",
     getOrderMerchant : "http://localhost:3000/order/merchant",
     getOrderAllGroupSuccess : "http://localhost:3000/order/all-group",
+    getOrderAllMerchant : 'http://localhost:3000/order/all-merchant',
     getStatusOrder: "http://localhost:3000/status/order",
     getIncome: "http://localhost:3000/income/user",
     getIncomeTime: "http://localhost:3000/income/time/user",

@@ -8,25 +8,44 @@ export async function getOrderUser(id, since, until) {
   return res.data;
 }
 
-export async function getOrderMerchant(id, since, until , merchant) {
+export async function getOrderMerchant(id, since, until, merchant) {
   const res = await axios.get(urls.Order.getOrderMerchant, {
-    params: { idUser: id, since: since, until: until  , merchant : merchant },
+    params: { idUser: id, since: since, until: until, merchant: merchant },
   });
 
   return res.data;
 }
 
-export async function getOrderAllUserSucess(since, until) {
-  const res = await axios.get(urls.Order.getOrderAllGroupSuccess, {
+export async function getOrderAllMerchant(since, until) {
+  const res = await axios.get(urls.Order.getOrderAllMerchant, {
     params: { since: since, until: until },
   });
-  return res.data;
-  // const promises = [];
-  // res.data.map(async (orderGroup) => {
-  //   const value = getStatusGroup(orderGroup, since, until, id);
-  //   promises.push(value);
-  // });
-  // return Promise.all(promises);
+  const promises = [];
+  res.data.map(async (merchant) => {
+    const value = getOrderAllUserStatus(since, until, merchant.merchant);
+    promises.push(value);
+  });
+  return Promise.all(promises);
+}
+
+export async function getOrderAllUserStatus(since, until, merchant) {
+  const order_success = await axios.get(urls.Order.getOrderAllGroupSuccess, {
+    params: { since: since, until: until, order_status: "1", order_merchant: merchant },
+  });
+  const order_pending = await axios.get(urls.Order.getOrderAllGroupSuccess, {
+    params: { since: since, until: until, order_status: "0", order_merchant: merchant },
+  });
+  const order_reject = await axios.get(urls.Order.getOrderAllGroupSuccess, {
+    params: { since: since, until: until, order_status: "2", order_merchant: merchant },
+  });
+  var orderFull = {};
+  orderFull.merchant = merchant;
+  orderFull.orderSuccessNumber = order_success.data[0]["COUNT(order_id)"];
+  orderFull.orderSuccessTotalValue = order_success.data[0]["SUM(reality_commission)"];
+  orderFull.orderSuccessTotal = order_success.data[0]["SUM(reality_commission)"] ?  order_success.data[0]["SUM(reality_commission)"].toLocaleString(undefined, { maximumFractionDigits: 0 }) : 0;
+  orderFull.orderPending = order_pending.data[0]["COUNT(order_id)"];
+  orderFull.orderReject = order_reject.data[0]["COUNT(order_id)"];
+  return orderFull;
 }
 
 export async function getOrderGroupUser(id, since, until) {
@@ -72,11 +91,9 @@ export async function getStatusGroup(orderGroup, since, until, user_id) {
   var orderFull = {};
   orderFull.merchant = orderGroup.merchant;
   orderFull.utm_source = orderGroup.utm_source;
-  if (resApproved.data[0]["SUM(reality_commission)"] != null ) {
-    orderFull.sum = (resApproved.data[0][
-      "SUM(reality_commission)"
-    ]).toLocaleString(undefined, {maximumFractionDigits: 0});
-    orderFull.sumNumber = (resApproved.data[0]["SUM(reality_commission)"]);
+  if (resApproved.data[0]["SUM(reality_commission)"] != null) {
+    orderFull.sum = resApproved.data[0]["SUM(reality_commission)"].toLocaleString(undefined, { maximumFractionDigits: 0 });
+    orderFull.sumNumber = resApproved.data[0]["SUM(reality_commission)"];
   } else {
     orderFull.sum = 0;
     orderFull.sumNumber = 0;

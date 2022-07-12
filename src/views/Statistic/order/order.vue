@@ -131,7 +131,11 @@
         <tfoot align="center">
           <tr>
             <td v-if="showTitle" colspan="8">
-              Tổng hoa hổng : {{ sumAllOrder }}
+              <span v-if="selectUser != 'Xem toàn bộ'">Tổng hoa hồng : {{ sumAllOrder }}</span>
+              <span class="mx-5 bg-all" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn : {{allOrderSuccess + allOrderPending + allOrderReject}}</span>
+              <span class="mx-5 bg-success" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn (tạm duyệt) : {{ allOrderSuccess }}</span>
+              <span class="mx-5 bg-alert" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn (chờ duyệt) : {{ allOrderPending }}</span>
+              <span class="mx-5 bg-remove" v-if="selectUser == 'Xem toàn bộ'"> Tổng số đơn (bị hủy) : {{ allOrderReject }}</span>
             </td>
           </tr>
         </tfoot>
@@ -248,6 +252,9 @@ export default {
       selectUser: convertId.convertId(sessionStorage.getItem("IdUser")),
       itemsUser: ["Xem toàn bộ"],
       timezone: "",
+      allOrderSuccess : 0,
+      allOrderPending : 0,
+      allOrderReject : 0,
     };
   },
   async created() {
@@ -332,6 +339,14 @@ export default {
     },
     getOrder: async function() {
       this.loading = true;
+      this.headers = [
+        {text: "Đối tác",key: "merchant",},
+        {text: "Mã user",key: "utm_source",},
+        {text: "Tạm duyệt",key: "approved",},
+        {text: "Chờ xử lý",key: "pending",},
+        {text: "Bị hủy",key: "rejected",},
+        {text: "Tổng hoa hồng ( Tạm Duyệt )",key: "sum",},
+      ],
       this.desserts = await order.getOrderGroupUser(
         this.selectUser,
         this.sinceDate.toISOString(),
@@ -342,12 +357,29 @@ export default {
     },
     getAllOrder: async function() {
       this.loading = true;
-      this.headers =  [{text: "Đối tác",key: "merchant"},{text: "Tạm duyệt",key: ['COUNT(order_id)']},{text: "Tổng hoa hồng (tạm duyệt)",key: ['SUM(reality_commission)']}],
-      this.desserts = await order.getOrderAllUserSucess(
+      this.headers =  [
+      {text: "Đối tác",key: "merchant"},
+      {text: "Tạm duyệt",key: 'orderSuccessNumber'},
+      {text: "Chờ xử lý",key: 'orderPending'},
+      {text: "Bị hủy",key: 'orderReject'},
+      {text: "Tổng hoa hồng (tạm duyệt)",key: 'orderSuccessTotal'},
+      ];
+      this.desserts = await order.getOrderAllMerchant(
         this.sinceDate.toISOString(),
         this.untilDate.toISOString()
       );
-      console.log(this.desserts);
+      this.sumAllOrder = this.desserts.reduce(function(sum , orderSuccess) {
+        return sum + orderSuccess.orderSuccessTotalValue
+      }, 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+      this.allOrderSuccess = this.desserts.reduce(function(sum , orderSuccess) {
+        return sum + orderSuccess.orderSuccessNumber
+      }, 0);
+      this.allOrderPending = this.desserts.reduce(function(sum , orderSuccess) {
+        return sum + orderSuccess.orderPending
+      }, 0)
+      this.allOrderReject = this.desserts.reduce(function(sum , orderSuccess) {
+        return sum + orderSuccess.orderReject
+      }, 0)
       this.loading = false;
     },
     getSumOrder: function(arrData) {
@@ -387,7 +419,14 @@ export default {
         case "Hôm nay": {
           this.resetTime();
           this.showSelectDate = false;
-          this.getOrder();
+          if(this.selectUser == "Xem toàn bộ")
+          {
+            this.getAllOrder()
+          }
+          else
+          {
+            this.getOrder();
+          }
           break;
         }
         case "Hôm qua": {
@@ -397,7 +436,14 @@ export default {
           this.untilDate.setUTCHours(23, 59, 59);
           this.sinceDate.setDate(this.sinceDate.getDate() - 1);
           this.untilDate.setDate(this.untilDate.getDate() - 1);
-          this.getOrder();
+          if(this.selectUser == "Xem toàn bộ")
+          {
+            this.getAllOrder()
+          }
+          else
+          {
+            this.getOrder();
+          }
           break;
         }
         case "Tháng này": {
@@ -408,7 +454,14 @@ export default {
           this.untilDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
-          this.getOrder();
+          if(this.selectUser == "Xem toàn bộ")
+          {
+            this.getAllOrder()
+          }
+          else
+          {
+            this.getOrder();
+          }
           break;
         }
         case "Tháng trước": {
@@ -423,7 +476,14 @@ export default {
           this.untilDate = new Date(date2.getFullYear(), date2.getMonth(), 0);
           this.sinceDate.setUTCHours(0, 0, 0, 0);
           this.untilDate.setUTCHours(23, 59, 59);
-          this.getOrder();
+          if(this.selectUser == "Xem toàn bộ")
+          {
+            this.getAllOrder()
+          }
+          else
+          {
+            this.getOrder();
+          }
           break;
         }
         case "Chọn thời gian": {
@@ -452,10 +512,24 @@ export default {
       this.sinceDate = this.sinceDateShow;
     },
     sinceDate: function() {
+    if(this.selectUser == "Xem toàn bộ")
+     {
+     this.getAllOrder()
+     }
+     else
+     {
       this.getOrder();
+     }
     },
     untilDate: function() {
+    if(this.selectUser == "Xem toàn bộ")
+     {
+     this.getAllOrder()
+     }
+     else
+     {
       this.getOrder();
+     }   
     },
   },
 };
@@ -509,5 +583,33 @@ export default {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
+}
+.bg-all
+{
+  background: #2196f3;
+      color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem;
+}
+.bg-success
+{
+  background: green;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem;
+}
+.bg-alert
+{
+    background: #ffbc34;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem;
+}
+.bg-remove
+{
+    background: red;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem;
 }
 </style>
