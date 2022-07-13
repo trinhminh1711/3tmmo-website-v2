@@ -16,6 +16,14 @@ export async function getOrderMerchant(id, since, until, merchant) {
   return res.data;
 }
 
+export async function getOrderExport(since, until) {
+  const res = await axios.get(urls.Order.getOrderExport, {
+    params: { since: since, until: until },
+  });
+
+  return res.data;
+}
+
 export async function getOrderAllMerchant(since, until) {
   const res = await axios.get(urls.Order.getOrderAllMerchant, {
     params: { since: since, until: until },

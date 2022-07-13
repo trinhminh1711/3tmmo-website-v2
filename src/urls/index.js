@@ -38,6 +38,7 @@ const urls = {
     getAllOrder: "https://api.accesstrade.vn/v1/orders",
     getOrderUser: "http://localhost:3000/order/user",
     getOrderGroup: "http://localhost:3000/order/group",
+    getOrderExport: "http://localhost:3000/order/export",
     getOrderMerchant : "http://localhost:3000/order/merchant",
     getOrderAllGroupSuccess : "http://localhost:3000/order/all-group",
     getOrderAllMerchant : 'http://localhost:3000/order/all-merchant',

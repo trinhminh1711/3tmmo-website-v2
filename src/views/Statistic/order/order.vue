@@ -6,6 +6,10 @@
         Từ <strong class="mx-2">{{ formatIsoTime(sinceDate) }}</strong
         >đến<strong class="mx-2">{{ formatIsoTime(untilDate) }}</strong>
       </v-alert>
+      <div style="flex:1" class="d-flex justify-end">
+      <excelExport v-if="rolesLogin == 0" :orderList="dataExportOrder" :since="sinceDate.toISOString()" :until="untilDate.toISOString()" />
+      </div>
+      
     </div>
     <div class="d-flex align-center mt-5">
       <div>
@@ -128,14 +132,14 @@
             </td>
           </tr>
         </tbody>
-        <tfoot align="center">
+        <tfoot>
           <tr>
-            <td v-if="showTitle" colspan="8">
-              <span v-if="selectUser != 'Xem toàn bộ'">Tổng hoa hồng : {{ sumAllOrder }}</span>
-              <span class="mx-5 bg-all" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn : {{allOrderSuccess + allOrderPending + allOrderReject}}</span>
-              <span class="mx-5 bg-success" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn (tạm duyệt) : {{ allOrderSuccess }}</span>
-              <span class="mx-5 bg-alert" v-if="selectUser == 'Xem toàn bộ'">Tổng số đơn (chờ duyệt) : {{ allOrderPending }}</span>
-              <span class="mx-5 bg-remove" v-if="selectUser == 'Xem toàn bộ'"> Tổng số đơn (bị hủy) : {{ allOrderReject }}</span>
+            <td colspan="8">
+              <span class="mr-5 bg-warning">Tổng hoa hồng : {{ sumAllOrder }}</span>
+              <span class="mx-5 bg-all" v-if="selectUser == 'Xem toàn bộ' &&  rolesLogin == 0">Tổng số đơn : {{allOrderSuccess + allOrderPending + allOrderReject}}</span>
+              <span class="mx-5 bg-success" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (tạm duyệt) : {{ allOrderSuccess }}</span>
+              <span class="mx-5 bg-alert" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (chờ duyệt) : {{ allOrderPending }}</span>
+              <span class="mx-5 bg-remove" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0"> Tổng số đơn (bị hủy) : {{ allOrderReject }}</span>
             </td>
           </tr>
         </tfoot>
@@ -181,8 +185,12 @@
 import * as checkPermision from "../../../permission/checkPermission";
 import * as convertId from "../../../function/converIdUser";
 import * as get from "../../../api/user/getListF0";
+import excelExport from "./excel.vue"
 import * as order from "../../../api/statistic/order";
 export default {
+  components:{
+    excelExport
+  },
   data() {
     return {
       headers: [
@@ -249,12 +257,14 @@ export default {
       options: {
         timeZone: "UTC",
       },
+      rolesLogin : 1,
       selectUser: convertId.convertId(sessionStorage.getItem("IdUser")),
-      itemsUser: ["Xem toàn bộ"],
+      itemsUser: [],
       timezone: "",
       allOrderSuccess : 0,
       allOrderPending : 0,
       allOrderReject : 0,
+      dataExportOrder : [],
     };
   },
   async created() {
@@ -264,14 +274,16 @@ export default {
   },
 
   async mounted() {
-    const roles = await checkPermision.checkPermission();
+    this.rolesLogin = await checkPermision.checkPermission();
     let listUser = [];
-    if (roles == 0) {
+    if (this.rolesLogin == 0) {
+      this.itemsUser = ["Xem toàn bộ"]
       listUser = await get.getAllUser();
       listUser.forEach((user) => {
         this.itemsUser.push(convertId.convertId(user.user_id));
       });
     } else {
+      this.itemsUser = []
       listUser = await get.getListChildUser(
         convertId.convertId(sessionStorage.getItem("IdUser"))
       );
@@ -583,6 +595,13 @@ export default {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
+}
+.bg-warning
+{
+    background: #fb8c00;
+      color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem;
 }
 .bg-all
 {

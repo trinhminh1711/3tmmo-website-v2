@@ -4,51 +4,40 @@
       class="btn btn-default"
       :data="json_data"
       :fields="json_fields"
-      worksheet="My Worksheet"
+      :title = "title"
+      worksheet="donhang"
       name="donhang.xlsx"
     >
-      Download Excel (you can customize this with html code!)
+      <v-btn @click="exportOrderData()" color="success">
+        Xuất báo cáo excel
+        <v-icon class="mx-5" left> mdi-export </v-icon>
+      </v-btn>
     </export-excel>
   </div>
 </template>
 
 <script>
+import * as order from "../../../api/statistic/order";
 export default {
-  props: ["orderList"],
+  props: ["orderList", "since", "until"],
   data() {
     return {
+      title : "",
       json_fields: {
-        "Complete name": "name",
-        City: "city",
-        Telephone: "phone.mobile",
-        "Telephone 2": {
-          field: "phone.landline",
+        "Thời gian mua": "sales_time",
+        "Advertisers": "merchant",
+        "Trạng thái": "order_status",
+        "Hoa hồng": {
+          field: "reality_commission",
           callback: (value) => {
-            return `Landline Phone - ${value}`;
+            return `${value}`;
           },
         },
+        "Mã nhân viên" : "utm_source",
+        "Thiết bị" : "device"
       },
       json_data: [
-        {
-          name: "Tony Peña",
-          city: "New York",
-          country: "United States",
-          birthdate: "1978-03-15",
-          phone: {
-            mobile: "1-541-754-3010",
-            landline: "(541) 754-3010",
-          },
-        },
-        {
-          name: "Thessaloniki",
-          city: "Athens",
-          country: "Greece",
-          birthdate: "1987-11-23",
-          phone: {
-            mobile: "+1 855 275 5071",
-            landline: "(2741) 2621-244",
-          },
-        },
+
       ],
       json_meta: [
         [
@@ -60,9 +49,39 @@ export default {
       ],
     };
   },
-  mounted() {
-      console.log(this.orderList);
+  async created() {
+    this.exportOrderData()
   },
+  methods: {
+    async exportOrderData() {
+      const dataExport = await order.getOrderExport(this.since, this.until);
+      this.title = "Thống kê đơn hàng từ " + (this.since.split("T")[1]).split(".")[0] + " " +this.since.split("T")[0] + " đến " + (this.until.split("T")[1]).split(".")[0] + " " + this.until.split("T")[0];
+      this.json_data = dataExport.map((order)=> ({
+        sales_time : order.sales_time.split("T")[1] + " " + order.sales_time.split("T")[0],
+        merchant : order.merchant,
+        utm_source : order.utm_source,
+        order_status : this.convertStatus(order.order_status),
+        reality_commission : order.reality_commission,
+        device : order.device
+      }))
+    },
+    convertStatus(status) {
+      if (status == 0) {
+        return "Đang xử lý";
+      } else if (status == 1) {
+        return "Tạm duyệt";
+      }
+      return "Đã hủy"
+    },
+  },
+  watch: {
+    since : function() {
+      this.exportOrderData();
+    },
+    until : function() {
+      this.exportOrderData();
+    }
+  }
 };
 </script>
 
