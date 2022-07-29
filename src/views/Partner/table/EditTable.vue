@@ -1,9 +1,22 @@
 <template>
   <div class="pa-5">
+    <p class="font-weight-light ml-2" style="opacity: 0.4">
+      Tên đối tác
+    </p>
     <v-text-field
       v-model="partnerEdit.name"
       class="pl-2"
-      disabled
+      clearable
+      solo
+    ></v-text-field>
+    <p class="font-weight-light ml-2" style="opacity: 0.4">
+      Tên hiển thị
+    </p>
+    <v-text-field
+      v-model="partnerEdit.name_public"
+      class="pl-2"
+      clearable
+      solo
     ></v-text-field>
     <v-text-field
       v-model="partnerEdit.link"
@@ -107,6 +120,7 @@ export default {
       setTimeout(() =>  { alert("Update successful");  this.loading = false ; location.reload();}, 2000);
       await partner.updatePartner(
         this.partnerEdit.name,
+        this.partnerEdit.name_public,
         this.partnerEdit.link,
         this.partnerEdit.unit_price,
         this.partnerEdit.sign,
@@ -120,7 +134,7 @@ export default {
       this.loading = true;
       this.confirmDelete = false;
       setTimeout(() =>  { alert("Đã xóa đối tác");  this.loading = false ; location.reload();}, 2000);
-      await partner.deletePartner(this.partnerEdit.name);
+      await partner.deletePartner(this.partnerEdit.parent_id);
     },
   },
 };

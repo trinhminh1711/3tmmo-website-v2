@@ -18,12 +18,13 @@ export async function getPartner() {
   });
   return dataRes.data;
 }
-export async function updatePartner(name, link, commission, sign, percentage) {
+export async function updatePartner(name, name_public, link, commission, sign, percentage) {
   const res = axios({
     method: "post",
     url: urls.Partner.update,
     data: {
       name: name,
+      name_public : name_public,
       link: link,
       unit_price: parseInt(commission),
       sign: sign,
@@ -34,22 +35,23 @@ export async function updatePartner(name, link, commission, sign, percentage) {
   return dataRes;
 }
 
-export async function deletePartner(name) {
+export async function deletePartner(partner_id) {
   const res = axios({
     method: "delete",
     url: urls.Partner.delete,
     data: {
-      name: name,
+     partner_id: partner_id,
     },
   });
   const dataRes = await res;
   return dataRes.data;
 }
 
-export async function addPartner(name, link, unit_price, sign, percentage) {
+export async function addPartner(name , name_public, link, unit_price, sign, percentage) {
   const res = axios.post(urls.Partner.add, {
     data: {
       name: name,
+      name_public : name_public,
       link: link,
       unit_price: unit_price,
       sign: sign,

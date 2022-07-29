@@ -8,6 +8,14 @@
       dense
       required
     ></v-text-field>
+    <v-text-field
+      v-model="namePublic"
+      label="Tên hiển thị"
+      placeholder="Tên (Có phân biệt hoa thường)"
+      outlined
+      dense
+      required
+    ></v-text-field>
     <v-textarea
       v-model="linkPartner"
       background-color="grey lighten-2"
@@ -72,6 +80,7 @@ export default {
       errorSuccess: false,
       loading: false,
       namePartner: "",
+      namePublic: "",
       percentagePartner: "",
       linkPartner: "",
       unitPricePartner: "",
@@ -87,6 +96,7 @@ export default {
         setTimeout(() =>  { alert("Thêm thành công");  this.loading = false ; location.reload();}, 2000);
         await partner.addPartner(
           this.namePartner,
+          this.namePublic,
           this.linkPartner,
           this.unitPricePartner,
           this.signPartner,

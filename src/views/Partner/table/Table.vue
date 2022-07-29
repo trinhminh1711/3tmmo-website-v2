@@ -23,12 +23,12 @@
         </thead>
         <tbody class="list">
           <tr v-for="(partner, index) in listPartners" :key="index">
-            <td>{{ partner.name }}</td>
+            <td>{{ (partner.name_public!=null)?partner.name_public:partner.name}}</td>
             <td style="max-width: 700px; padding: 1rem; overflow: hidden">
               {{ partner.redirect_link }}
             </td>
             <td>{{ partner.unit_price.toLocaleString(undefined, {maximumFractionDigits: 0}) }}</td>
-            <td>{{ partner.sign }}</td>
+            <td style="max-width: 450px;">{{ partner.sign }}</td>
             <td
               v-if="showAdmin"
               class="pointer"
@@ -84,7 +84,6 @@ export default {
     updateSelected(selectedItem) {
       this.dialog = true;
       this.partnerEdit = selectedItem;
-      console.log(this.partnerEdit);
     },
   },
 };
