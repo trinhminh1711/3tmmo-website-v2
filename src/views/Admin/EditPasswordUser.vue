@@ -79,10 +79,8 @@ export default {
       var updatePass = await password.updatePassword(id, this.newPass);
       this.loading = false;
       if (updatePass) {
-        alert("Đổi mật khẩu thành công . Vui lòng đăng nhập lại");
-        sessionStorage.clear();
-        sessionStorage.setItem("loginStatus", 0);
-        this.$router.push({ path: "/login" });
+        alert("Đổi mật khẩu thành công");
+        location.reload();
       }
     },
   },

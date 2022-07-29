@@ -6,7 +6,7 @@
       :fields="json_fields"
       :title = "title"
       worksheet="donhang"
-      name="donhang.xlsx"
+      name="donhang.xls"
     >
       <v-btn @click="exportOrderData()" color="success">
         Xuất báo cáo excel
@@ -34,7 +34,8 @@ export default {
           },
         },
         "Mã nhân viên" : "utm_source",
-        "Thiết bị" : "device"
+        "Thiết bị" : "device",
+	"User Agent" : "user_agent"
       },
       json_data: [
 
@@ -62,7 +63,8 @@ export default {
         utm_source : order.utm_source,
         order_status : this.convertStatus(order.order_status),
         reality_commission : order.reality_commission,
-        device : order.device
+        device : order.device,
+	user_agent : order.user_agent
       }))
     },
     convertStatus(status) {

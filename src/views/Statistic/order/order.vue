@@ -135,11 +135,11 @@
         <tfoot>
           <tr>
             <td colspan="8">
-              <span class="mr-5 bg-warning">Tổng hoa hồng : {{ sumAllOrder }}</span>
-              <span class="mx-5 bg-all" v-if="selectUser == 'Xem toàn bộ' &&  rolesLogin == 0">Tổng số đơn : {{allOrderSuccess + allOrderPending + allOrderReject}}</span>
-              <span class="mx-5 bg-success" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (tạm duyệt) : {{ allOrderSuccess }}</span>
-              <span class="mx-5 bg-alert" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (chờ duyệt) : {{ allOrderPending }}</span>
-              <span class="mx-5 bg-remove" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0"> Tổng số đơn (bị hủy) : {{ allOrderReject }}</span>
+              <span class="mr-2 bg-warning">Tổng hoa hồng : {{ sumAllOrder }}</span>
+              <span class="mx-2 bg-all" v-if="selectUser == 'Xem toàn bộ' &&  rolesLogin == 0">Tổng số đơn : {{allOrderSuccess + allOrderPending + allOrderReject}}</span>
+              <span class="mx-2 bg-success" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (tạm duyệt) : {{ allOrderSuccess }}</span>
+              <span class="mx-2 bg-alert" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0">Tổng số đơn (chờ duyệt) : {{ allOrderPending }}</span>
+              <span class="mx-2 bg-remove" v-if="selectUser == 'Xem toàn bộ' && rolesLogin == 0"> Tổng số đơn (bị hủy) : {{ allOrderReject }}</span>
             </td>
           </tr>
         </tfoot>
@@ -226,8 +226,8 @@ export default {
         { text: "Trạng thái đơn hàng", value: "order_status", sortable: false },
         { text: "Hoa hồng", value: "reality_commission" },
         { text: "Thời gian click", value: "click_time" },
-        { text: "Thời gian xác nhận", value: "confirmed_time" },
-        { text: "User agent", value: "user_agent", width: "500px"},
+        { text: "Thiết bị", value: "device" },
+        { text: "User agent", value: "user_agent", width: "280px"},
       ],
       itemViewDetail: [],
       sumIncomeDetail: 0,
@@ -321,6 +321,7 @@ export default {
       var empty = [];
       dataMerchant.forEach((element) => {
         var obj = {};
+        console.log(element);
         obj.order_id = element.order_id;
         obj.merchant = element.merchant;
         obj.is_confirmed = this.convertConfirmStatus(element.is_confirmed);
@@ -328,7 +329,7 @@ export default {
         obj.reality_commission = element.reality_commission.toLocaleString(undefined, {maximumFractionDigits: 0});
         obj.click_time = this.formatUTCTime(element.click_time);
         obj.sales_time = this.formatUTCTime(element.sales_time);
-        obj.confirmed_time = this.formatUTCTime(element.confirmed_time);
+        obj.device = (element.device != " ") ? element.device : "Không có thông tin";
         obj.user_agent = element.user_agent
         empty.push(obj);
       });
@@ -410,18 +411,12 @@ export default {
       this.persentReject = ((reject / approved) * 100).toFixed(2) + "%";
     },
     formatIsoTime(time) {
-      return "00:00:00 || " + time.toISOString().split("T")[0];
+      return time ? "00:00:00 || " + time.toISOString().split("T")[0] : time;
     },
     formatUTCTime(time) {
-      return (
-        time.split("T")[1].split(":")[0] +
-        ":" +
-        time.split("T")[1].split(":")[1] +
-        ":" +
-        time.split("T")[1].split(":")[2] +
-        " " +
-        time.split("T")[0]
-      );
+      return time ?  (
+        time.split("T")[1].split(".")[0] +"   " + time.split("T")[0]
+      ) : time;
     },
   },
   computed: {},
@@ -483,11 +478,11 @@ export default {
           this.sinceDate = new Date(
             date2.getFullYear(),
             date2.getMonth() - 1,
-            2
+            1
           );
           this.untilDate = new Date(date2.getFullYear(), date2.getMonth(), 0);
-          this.sinceDate.setUTCHours(0, 0, 0, 0);
-          this.untilDate.setUTCHours(23, 59, 59);
+          this.sinceDate.setHours(7, 0, 0, 0);
+          this.untilDate.setHours(30, 59, 59, 99);
           if(this.selectUser == "Xem toàn bộ")
           {
             this.getAllOrder()
@@ -572,7 +567,9 @@ export default {
   opacity: 0;
 }
 .height-full {
-  height: 100vh;
+  min-height: 100vh;
+  max-height:100%;
+  
 }
 .v-text-field__details {
   position: absolute !important;
