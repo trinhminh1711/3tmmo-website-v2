@@ -119,6 +119,7 @@ export default {
       this.loading = true;
       setTimeout(() =>  { alert("Update successful");  this.loading = false ; location.reload();}, 2000);
       await partner.updatePartner(
+        this.partnerEdit.parent_id,
         this.partnerEdit.name,
         this.partnerEdit.name_public,
         this.partnerEdit.link,

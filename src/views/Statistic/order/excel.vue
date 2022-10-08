@@ -62,10 +62,10 @@ export default {
         merchant : order.merchant,
         utm_source : order.utm_source,
         order_status : this.convertStatus(order.order_status),
-        reality_commission : order.reality_commission,
+        reality_commission : (order.order_status == 1) ?  order.reality_commission : 0,
         device : order.device,
 	user_agent : order.user_agent
-      }))
+      }));
     },
     convertStatus(status) {
       if (status == 0) {
