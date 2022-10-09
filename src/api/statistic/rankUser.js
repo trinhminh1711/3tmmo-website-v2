@@ -1,8 +1,8 @@
 const axios = require("axios").default;
 import urls from "../../urls";
-export async function getRank(sale_time) {
+export async function getRank(sinceTime , untilTime) {
   const res = await axios.get(urls.Order.getRankIncome, {
-    params: { since: sale_time },
+    params: { since: sinceTime , until : untilTime },
   });
   return res.data;
 }
