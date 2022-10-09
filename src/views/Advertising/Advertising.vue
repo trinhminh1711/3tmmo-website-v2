@@ -29,12 +29,12 @@
               <v-icon class="sizes-small ml-3">mdi-cash-multiple</v-icon>
             </v-btn>
           </div>
-          <div>
+          <!-- <div>
             <v-btn class="d-flex align-center" @click="getRankUser()">
               Xem xếp hạng
               <v-icon class="ml-3 sizes-small">mdi-chevron-triple-up</v-icon>
             </v-btn>
-          </div>
+          </div> -->
         </div>
       </v-row>
       <v-row class="pl-5 pt-5">
@@ -141,17 +141,9 @@ export default {
     },
     async posterity(sinceTime, untilTime) {
       this.loading = true;
-      (this.allPosterity = await getPosterity.getPosterity(this.idUser, sinceTime, untilTime)), (this.loading = false);
-    },
-    async getRankUser() {
-      this.loading = true;
-      // const year = new Date().getFullYear();
-      // var currentYear = new Date(year, 0, 1);
-      // currentYear.setHours(7, 0, 0, 0);
-      // const saleTime = currentYear.toISOString();
+      const dataUser = await getPosterity.getPosterity(this.idUser, sinceTime, untilTime); 
       var emptyArr = [];
-      const dataUser = this.allPosterity;
-      const datatest = await rank.getRank(this.sinceTime , this.untilTime);
+      const datatest = await rank.getRank(this.sinceTime, this.untilTime);
       for (let i = 0; i < dataUser.length; i++) {
         for (let j = 0; j < datatest.length; j++) {
           if (dataUser[i].id == datatest[j].utm_source) {
@@ -160,16 +152,35 @@ export default {
             objEmty.username = dataUser[i].username;
             objEmty.name = dataUser[i].name;
             objEmty.rank = j + 1;
+            objEmty.inCome = dataUser[i].reality_commission;
+            objEmty.sharing =  ((10 * this.revertNumber(dataUser[i].reality_commission)) / 100).toLocaleString(undefined , {minimumFractionDigits: 0 , maximumFractionDigits: 0});
             emptyArr.push(objEmty);
           }
         }
       }
       this.allPosterity = emptyArr;
-
       this.loading = false;
     },
+    // async getRankUser() {
+    //   this.loading = true;
+    //   const year = new Date().getFullYear();
+    //   var currentYear = new Date(year, 0, 1);
+    //   currentYear.setHours(7, 0, 0, 0);
+    //   const saleTime = currentYear.toISOString();
+    //   var emptyArr = [];
+
+    //   this.allPosterity = emptyArr;
+    //   console.log(emptyArr);
+    //   this.loading = false;
+    // },
     formatIsoTime(time) {
       return time ? "00:00:00 || " + time.toISOString().split("T")[0] : time;
+    },
+    revertNumber(data) {
+      if (data != 0) {
+        return parseFloat(data.replaceAll(",", ""));
+      }
+      return 0;
     },
   },
   watch: {
@@ -213,9 +224,11 @@ export default {
     },
     sinceTime: function() {
       this.posterity(this.sinceTime, this.untilTime);
+      //this.getRankUser();
     },
     untilTime: function() {
       this.posterity(this.sinceTime, this.untilTime);
+      //this.getRankUser();
     },
   },
 };

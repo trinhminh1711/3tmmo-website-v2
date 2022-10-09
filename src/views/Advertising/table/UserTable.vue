@@ -28,7 +28,7 @@ export default {
         { text: "Họ Tên", value: "name" },
         {
           text: "Tổng doanh thu",
-          value: "reality_commission",
+          value: "inCome",
         },
         { text: "Hoa hồng F", value: "sharing" },
         { text: "Thứ hạng", value: "rank" },
@@ -45,9 +45,8 @@ export default {
   },
   watch: {
     posterity: function() {
-      var result = this.posterity.map((person) => ({ value: person.reality_commission }));
-      this.totalIncome = this.posterity.reduce((n, { reality_commission }) => n + this.revertNumber(reality_commission), 0);
-      console.log(result);
+      this.totalIncome = this.posterity.reduce((n, { inCome }) => n + this.revertNumber(inCome), 0);
+
     },
   },
 };
