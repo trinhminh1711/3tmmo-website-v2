@@ -141,24 +141,43 @@ export default {
     },
     async posterity(sinceTime, untilTime) {
       this.loading = true;
-      const dataUser = await getPosterity.getPosterity(this.idUser, sinceTime, untilTime); 
-      var emptyArr = [];
+      const dataUser = await getPosterity.getPosterity(this.idUser, sinceTime, untilTime);
+      // var emptyArr = [];
       const datatest = await rank.getRank(this.sinceTime, this.untilTime);
-      for (let i = 0; i < dataUser.length; i++) {
-        for (let j = 0; j < datatest.length; j++) {
-          if (dataUser[i].id == datatest[j].utm_source) {
-            const objEmty = {};
-            objEmty.id = dataUser[i].id;
-            objEmty.username = dataUser[i].username;
-            objEmty.name = dataUser[i].name;
-            objEmty.rank = j + 1;
-            objEmty.inCome = dataUser[i].reality_commission;
-            objEmty.sharing =  ((10 * this.revertNumber(dataUser[i].reality_commission)) / 100).toLocaleString(undefined , {minimumFractionDigits: 0 , maximumFractionDigits: 0});
-            emptyArr.push(objEmty);
-          }
+      const mergeArr = dataUser.map(v => ({ ...v, ...datatest.find(sp => sp.utm_source === v.id) }));
+      const mergeArrSort = mergeArr.sort((a, b) => parseFloat(a.reality_commission) - parseFloat(b.reality_commission));
+      const mergeArrSortRevert = mergeArrSort.reverse();
+      for(let i=0 ; i<mergeArrSortRevert.length ; i++){
+        if(mergeArrSortRevert[i].reality_commission > 0)
+        {
+          mergeArrSortRevert[i].rank = i + 1;
+        }
+        else
+        {
+          mergeArrSortRevert[i].rank = "Chưa xét hạng";
         }
       }
-      this.allPosterity = emptyArr;
+      // for (let i = 0; i < dataUser.length; i++) {
+      //   for (let j = 0; j < datatest.length; j++) {
+      //     let objEmty = {};
+      //     if (dataUser[i].id == datatest[j].utm_source) {
+      //       //console.log(datatest[j].utm_source);
+      //       objEmty.id = dataUser[i].id;
+      //       objEmty.username = dataUser[i].username;
+      //       objEmty.name = dataUser[i].name;
+      //       objEmty.rank = j + 1;
+      //       objEmty.inCome = dataUser[i].reality_commission;
+      //       objEmty.sharing = ((10 * this.revertNumber(dataUser[i].reality_commission)) / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      //       emptyArr.push(objEmty);
+      //       break;
+      //     } else {
+      //      console.log(dataUser[i]);
+      //     }
+      //   }
+      // }
+      this.allPosterity = mergeArrSortRevert;
+      // console.log(dataUser);
+      // console.log(datatest);
       this.loading = false;
     },
     // async getRankUser() {

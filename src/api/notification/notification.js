@@ -8,7 +8,6 @@ export async function addNotification(content, extra_date) {
     },
   });
   const dataRes = await res;
-  console.log(dataRes);
   return dataRes;
 }
 

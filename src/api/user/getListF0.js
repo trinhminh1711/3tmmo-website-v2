@@ -12,22 +12,22 @@ export async function getAllUser() {
   return res.data;
 }
 
-export async function getPosterity(idUser, sinceTime , untilTime) {
+export async function getPosterity(idUser, sinceTime, untilTime) {
   const res = await axios.get(urls.User.posterity, { params: { id: idUser } });
   const promises = [];
   res.data.map(async (user) => {
-    const value = getIncomeYear(user, sinceTime , untilTime);
+    const value = getIncomeYear(user, sinceTime, untilTime);
     promises.push(value);
   });
   return Promise.all(promises);
 }
 
-async function getIncomeYear(user, sinceTime , untilTime) {
+async function getIncomeYear(user, sinceTime, untilTime) {
   const incomeYear = await axios.get(urls.Order.getIncome, {
     params: {
       idUser: func.convertId(user.user_id),
-      since: sinceTime ,
-      until: untilTime
+      since: sinceTime,
+      until: untilTime,
     },
   });
   var userFull = {};
@@ -37,18 +37,14 @@ async function getIncomeYear(user, sinceTime , untilTime) {
   if (incomeYear.data[0]["SUM(pub_commission)"] == null) {
     userFull.pub_commission = 0;
   } else {
-    userFull.pub_commission = incomeYear.data[0][
-      "SUM(pub_commission)"
-    ].toLocaleString();
+    userFull.pub_commission = incomeYear.data[0]["SUM(pub_commission)"];
   }
   if (incomeYear.data[0]["SUM(pub_commission)"] == null) {
     userFull.reality_commission = 0;
     userFull.sharing = 0;
   } else {
-    userFull.reality_commission = incomeYear.data[0][
-      "SUM(reality_commission)"
-    ].toLocaleString();
-    userFull.sharing = ((incomeYear.data[0]["SUM(reality_commission)"] * 10) / 100).toLocaleString(undefined, {maximumFractionDigits: 0});
+    userFull.reality_commission = incomeYear.data[0]["SUM(reality_commission)"]
+    userFull.sharing = ((incomeYear.data[0]["SUM(reality_commission)"] * 10) / 100);
   }
   return userFull;
 }
